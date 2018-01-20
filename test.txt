@@ -3,4 +3,8 @@ salam khoobi? (
 EOF // comment ast a + b 0 1 = 12
 salaaam12
 
+/* khob ina commente bayad ignore beseh
+
+va hamchenan commente */
+
 )
