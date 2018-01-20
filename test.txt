@@ -1,0 +1,6 @@
+class () { }
+salam khoobi? (
+EOF // comment ast a + b 0 1 = 12
+salaaam12
+
+)
