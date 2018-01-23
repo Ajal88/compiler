@@ -1,10 +1,1 @@
-class () { }
-salam khoobi? (
-EOF // comment ast a + b 0 1 = 12
-salaaam12
-
-/* khob ina commente bayad ignore beseh
-
-va hamchenan commente */
-
-)
+class identifier { static boolean identifier ; public static int identifier ( int identifier , boolean identifier ) { int identifier ; identifier = integer ; identifier = true ; return identifier + identifier ; } } public class identifier { public static void main ( ) { int identifier ; identifier = integer ; identifier = identifier . identifier ( identifier , false ) ; System.out.println ( identifier ) ; } } EOF

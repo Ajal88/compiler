@@ -1,0 +1,81 @@
+Goal -> Source EOF
+Source -> ClassDeclarations MainClass
+MainClass -> public class Identifier { public static void main () { VarDeclarations Statements }}
+ClassDeclarations -> ClassDeclaration ClassDeclarations
+ClassDeclarations -> ''
+ClassDeclaration -> class Identifier Extension { FieldDeclarations MethodDeclarations }
+Extension -> extends Identifier
+Extension -> ''
+FieldDeclarations -> FieldDeclaration FieldDeclarations
+FieldDeclarations -> ''
+FieldDeclaration -> static Type Identifier ;
+VarDeclarations -> VarDeclaration VarDeclarations
+VarDeclarations -> ''
+VarDeclaration -> Type Identifier ;
+MethodDeclarations -> MethodDeclaration MethodDeclarations
+MethodDeclarations -> ''
+MethodDeclaration -> public static Type Identifier ( Parameters ) { VarDeclarations Statements return GenExpression ; }
+Parameters -> Type Identifier Parameter
+Parameters -> ''
+Parameter -> , Type Identifier Parameter
+Parameter -> ''
+Type -> boolean
+Type -> int
+Statements -> A
+A -> Statement A
+A -> ''
+Statement -> { Statements }
+Statement -> if ( GenExpression ) Statement else Statement
+Statement -> while ( GenExpression ) Statement
+Statement -> for ( Identifier = Integer ; RelTerm ; Identifier + = Integer ) Statement
+Statement -> Identifier = GenExpression ;
+Statement -> System.out.println ( GenExpression ) ;
+GenExpression -> Factor C B E
+E ->  RelTerm1 D
+E -> ''
+Expression -> Term B
+B -> Expression1 B
+B -> ''
+Term -> Factor C
+C -> * Factor C
+C -> ''
+Factor -> Identifier Factor2
+Factor -> ( Expression )
+Factor -> true
+Factor -> false
+Factor -> Integer
+D -> && RelTerm D
+D -> ''
+RelTerm -> Identifier Factor2 C B RelTerm1
+RelTerm -> ( Expression ) C B RelTerm1
+RelTerm -> true C B RelTerm1
+RelTerm -> false C B RelTerm1
+RelTerm -> Integer C B RelTerm1
+Arguments -> Integer C B Arguments5
+Arguments -> false C B Arguments4
+Arguments -> true C B Arguments3
+Arguments -> Identifier Factor2 C B Arguments2
+Arguments -> ( Expression ) C B Arguments1
+Arguments -> ''
+Argument -> , GenExpression Argument
+Argument -> ''
+Identifier -> identifier
+Integer -> integer
+Expression1 -> + Term
+Expression1 -> - Term
+Factor1 -> ( Arguments )
+Factor1 -> ''
+Factor2 -> . Identifier Factor1
+Factor2 -> ''
+RelTerm1 -> == Expression
+RelTerm1 -> < Expression
+Arguments1 -> Argument
+Arguments1 -> RelTerm1 D Argument
+Arguments2 -> Argument
+Arguments2 -> RelTerm1 D Argument
+Arguments3 -> Argument
+Arguments3 -> RelTerm1 D Argument
+Arguments4 -> Argument
+Arguments4 -> RelTerm1 D Argument
+Arguments5 -> Argument
+Arguments5 -> RelTerm1 D Argument
