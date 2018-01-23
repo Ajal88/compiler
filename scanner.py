@@ -8,13 +8,15 @@ reservedWords = ['EOF', 'public', 'class', '{', 'static', 'void', 'main', '()', 
 tokens = []
 
 symbolTable = []
+reservedSymbolTable = []
 
 flag = False
 
 with open('test.txt') as test:
     lines = test.readlines()
 
-id = -1
+id = 0
+ID = 499
 
 for line in lines:
     wordsInLine = line.split()
@@ -37,45 +39,47 @@ for line in lines:
                     continue
 
                 else:
-                    dict = {words}
-                    tokens.append(dict)
+                    array = [words, id]
+                    tokens.append(array)
+                    reservedSymbolTable.append(words)
+                    id = id + 1
 
             elif len(words) == 1:
                 letterPattern = re.compile('[A-Za-z]')
                 digitPattern = re.compile('[0-9]')
-                id = id + 1
+                ID = ID + 1
 
                 if letterPattern.match(words):
-                    dict = {'letter': id}
-                    tokens.append(dict)
+                    array = ['letter', ID]
+                    tokens.append(array)
                     symbolTable.append(words)
                 elif digitPattern.match(words):
-                    dict = {'digit': id}
-                    tokens.append(dict)
+                    array = ['digit', ID]
+                    tokens.append(array)
                     symbolTable.append(words)
                 else:
                     print(words + "did not match any")
 
 
             else:
-                id = id + 1
+                ID = ID + 1
                 identifierPattern = re.compile('[A-Za-z]([A-Za-z]|[0-9])+')
                 integerPattern = re.compile('[0-9]+')
 
                 if identifierPattern.match(words):
-                    dict = {'identifier': id}
-                    tokens.append(dict)
+                    array = ['identifier', ID]
+                    tokens.append(array)
                     symbolTable.append(words)
 
                 elif integerPattern.match(words):
-                    dict = {'integer': id}
+                    array = ['integer', ID]
                     tokens.append(dict)
                     symbolTable.append(words)
 
 
 def sendNextToken():
-    data = [symbolTable, tokens[0]]
+    data = [symbolTable, reservedSymbolTable, tokens[0]]
 
     del tokens[0]
 
-    return data
+    return (data)
