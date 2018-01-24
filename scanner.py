@@ -60,7 +60,6 @@ for line in lines:
                 else:
                     print(words + "did not match any")
 
-
             else:
                 ID = ID + 1
                 identifierPattern = re.compile('[A-Za-z]([A-Za-z]|[0-9])+')
