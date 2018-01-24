@@ -279,19 +279,25 @@ ll1 = {
                    '==': 'Arguments5 -> RelTerm1 D Argument', '<': 'Arguments5 -> RelTerm1 D Argument', '$': '-1'}}
 # parsing chapter
 stack = ['$', 'Goal']
+next_token = True
 top_stack = stack.pop()
 while top_stack != '$':
+    if next_token:
+        token = sendNextToken()[2][0]
+        next_token = False
     if top_stack in ter:
-        token = sendNextToken()[1].pop()
         if top_stack == token:
             top_stack = stack.pop()
-            token = sendNextToken()
+            next_token = True
+        print(stack)
     elif top_stack in non_ter:
-        token = sendNextToken()[1].pop()
-        print(token)
         if ll1[top_stack][token] != '-1':
             rl = ll1[top_stack][token].split(' -> ')
             for r in reversed(rl[1].split(' ')):
-                stack.append(r)
-            top_stack = stack.pop()
-    print(stack)
+                if r != '':
+                    stack.append(r)
+            print(stack)
+        else:
+            break
+        top_stack = stack.pop()
+
