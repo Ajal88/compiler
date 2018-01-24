@@ -1,14 +1,13 @@
 from scanner import sendNextToken
 
-file = open('grammar.txt', 'r')
-rules = file.readlines()
-ter = ['EOF', 'public', 'class', '{', 'static', 'void', 'main', '}', 'extends', ';', '(', ')',
-       'return', ',', 'boolean', 'int', 'if', 'else', 'while', 'for', '=', '+', 'System.out.println', '*',
-       'true', 'false', '&&', 'identifier', 'integer', '-', '.', '==', '<', '$']
 ter = ['EOF', 'public', 'class', '{', 'static', 'void', 'main', '(', ')', '}', 'extends', ';',
        'return', ',', 'boolean', 'int', 'if', 'else', 'while', 'for', '=', '+', 'System.out.println', '*',
        'true', 'false', '&&', 'identifier', 'integer', '-', '.', '==', '<', '$']
 non_ter = []
+action_symbol = []
+
+file = open('grammar.txt', 'r')
+rules = file.readlines()
 i = 0
 for rule in rules:
     rule = rule.rstrip()
@@ -18,6 +17,7 @@ for rule in rules:
             break
         if s not in non_ter:
             non_ter.append(s)
+
 # parse table
 ll1 = {
     'Goal': {'EOF': 'Goal -> Source EOF', 'public': 'Goal -> Source EOF', 'class': 'Goal -> Source EOF', '{': '-1',
@@ -296,8 +296,10 @@ while top_stack != '$':
             for r in reversed(rl[1].split(' ')):
                 if r != '':
                     stack.append(r)
-            print(stack)
         else:
             break
+        print(stack)
         top_stack = stack.pop()
-
+    elif top_stack in action_symbol:
+        code_gen(top_stack)
+        top_stack = stack.pop()

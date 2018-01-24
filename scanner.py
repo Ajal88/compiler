@@ -50,11 +50,11 @@ for line in lines:
                 ID = ID + 1
 
                 if letterPattern.match(words):
-                    array = ['letter', ID]
+                    array = ['identifier', ID]
                     tokens.append(array)
                     symbolTable.append(words)
                 elif digitPattern.match(words):
-                    array = ['digit', ID]
+                    array = ['integer', ID]
                     tokens.append(array)
                     symbolTable.append(words)
                 else:
