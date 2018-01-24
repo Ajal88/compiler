@@ -10,6 +10,6 @@ public class Cls2 {
 public static void main ( ) {
 int b ;
 b = 3 ;
-b = Cls.test ( b , false ) ; System.out.println ( b ) ;
+b = Cls . test ( b , false ) ; System.out.println ( b ) ;
 } }
 EOF

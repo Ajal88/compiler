@@ -5,7 +5,6 @@ ter = ['EOF', 'public', 'class', '{', 'static', 'void', 'main', '(', ')', '}', '
        'true', 'false', '&&', 'identifier', 'integer', '-', '.', '==', '<', '$']
 non_ter = []
 action_symbol = []
-
 file = open('grammar.txt', 'r')
 rules = file.readlines()
 i = 0
@@ -289,16 +288,16 @@ while top_stack != '$':
         if top_stack == token:
             top_stack = stack.pop()
             next_token = True
-        print(stack)
+            # print(stack)
     elif top_stack in non_ter:
         if ll1[top_stack][token] != '-1':
             rl = ll1[top_stack][token].split(' -> ')
             for r in reversed(rl[1].split(' ')):
                 if r != '':
                     stack.append(r)
+            # print(stack)
         else:
             break
-        print(stack)
         top_stack = stack.pop()
     elif top_stack in action_symbol:
         code_gen(top_stack)
