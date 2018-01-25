@@ -1,6 +1,7 @@
 PB = []  # program block
 ss = []  # semantic stack
 all_sym = []  # all of the classes and methods
+last_token = [] # for id and types
 
 # changes added : for classes when we have var declarations we should add a dict to contain[] :{int|boolean : identifier}
 
@@ -9,6 +10,7 @@ class NameSpace:
     def __init__(self):
         self.contain = []
         self.type = None
+        self.return_type = None
         self.parent = []
         self.name = None
 
@@ -51,8 +53,6 @@ def code_gen(action):
         package.children.append(main)
         all_sym.append(main)
 
-    elif action == 'Class_Find_Set':
-
     elif action == 'Assign_Table_Field':
         var_name = ss.pop()
         var_type = ss.pop()
@@ -64,3 +64,40 @@ def code_gen(action):
         static_var.parent.append(parent)
         parent.contain.append(static_var)
         ss.append(parent)
+
+    elif action == 'Var_Dec':
+        var_name = ss.pop()
+        var_type = ss.pop()
+        parent = ss.pop()
+        # TODO search symbole table to update for var
+        var = NameSpace()
+        var.name = var_name
+        var.type = var_type
+        var.parent.append(parent)
+        parent.contain.append(var)
+        ss.append(parent)
+
+    elif action == 'Assign_Table_Method':
+        param_num = ss.pop()
+        params = []
+        for i in range(param_num):
+            params[i] = ss.pop()
+        m_name = ss.pop()
+        m_type = ss.pop()
+        m_parent = ss.pop()
+        method = NameSpace()
+        method.name = m_name
+        method.type = 'method'
+        method.return_type = m_type
+        method.parent.append(m_parent)
+        all_sym.append(method)
+        for i in range(param_num):
+            method.contain.append(params[i])
+            params[i].parent = method
+            all_sym.append(params[i])
+        
+
+
+def find_var(var_namespace):
+    # TODO find a var in parents recursively
+    pass
