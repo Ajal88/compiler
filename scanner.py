@@ -113,25 +113,8 @@ def sendNextToken():
 
     del tokens[0]
 
-    print(data)
+    return (data)
 
 
-print(symbolTable)
-print(reservedSymbolTable)
 
-sendNextToken()
-sendNextToken()
-sendNextToken()
-sendNextToken()
-sendNextToken()
-sendNextToken()
-sendNextToken()
-sendNextToken()
-sendNextToken()
-sendNextToken()
-sendNextToken()
-sendNextToken()
-sendNextToken()
-sendNextToken()
-sendNextToken()
-sendNextToken()
+
