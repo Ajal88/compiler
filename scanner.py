@@ -3,10 +3,9 @@ import re
 
 reservedWords = ['EOF', 'public', 'class', '{', 'static', 'void', 'main', '()', '}', 'extends', ';', '(', ')',
                  'return', 'boolean', 'int', 'if', 'else', 'while', 'for', 'System.out.println', '.',
-                 'true', 'false', '&&', '==', '<', '>', '-', '*', '+', '//', '/*', '*/', ',', '=']
+                 'true', 'false', '&&', '==', '<', '>', '-', '*', '+', '//', '/*', '*/', ',', '=' , '+=']
 
 tokens = []
-
 symbolTable = []
 reservedSymbolTable = []
 
@@ -19,6 +18,23 @@ id = 0
 ID = 499
 
 for line in lines:
+    print("------")
+    print(line)
+    for Terminal in reservedWords:
+        if Terminal in line:
+            print(Terminal)
+            print(len(Terminal))
+            print(line.index(Terminal))
+
+            if line.index(Terminal) == 0:
+                line = line[:len(Terminal)] + ' ' + line[len(Terminal):]
+
+            else:
+                line = line[:line.index(Terminal)]+ ' ' + line[line.index(Terminal):]
+                line = line[:line.index(Terminal)+len(Terminal)] + ' ' + line[line.index(Terminal)+len(Terminal):]
+
+
+    print(line)
     wordsInLine = line.split()
     for words in wordsInLine:
 
@@ -77,8 +93,29 @@ for line in lines:
 
 
 def sendNextToken():
-    data = [symbolTable, reservedSymbolTable, tokens[0]]
+    data = [tokens[0]]
 
     del tokens[0]
 
-    return (data)
+    print(data)
+
+
+print(symbolTable)
+print(reservedSymbolTable)
+
+sendNextToken()
+sendNextToken()
+sendNextToken()
+sendNextToken()
+sendNextToken()
+sendNextToken()
+sendNextToken()
+sendNextToken()
+sendNextToken()
+sendNextToken()
+sendNextToken()
+sendNextToken()
+sendNextToken()
+sendNextToken()
+sendNextToken()
+sendNextToken()
