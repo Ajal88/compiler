@@ -3,7 +3,7 @@ import re
 
 reservedWords = ['EOF', 'public', 'class', '{', 'static', 'void', 'main', '()', '}', 'extends', ';', '(', ')',
                  'return', 'boolean', 'int', 'if', 'else', 'while', 'for', 'System.out.println', '.',
-                 'true', 'false', '&&', '==', '<', '>', '-', '*', '+', '//', '/*', '*/', ',', '=' , '+=']
+                 'true', 'false', '&&', '==', '<', '>', '-', '*', '+', '//', '/*', '*/', ',', '=', '+=']
 
 tokens = []
 symbolTable = []
@@ -22,17 +22,13 @@ for line in lines:
     print(line)
     for Terminal in reservedWords:
         if Terminal in line:
-            print(Terminal)
-            print(len(Terminal))
-            print(line.index(Terminal))
 
             if line.index(Terminal) == 0:
                 line = line[:len(Terminal)] + ' ' + line[len(Terminal):]
 
             else:
-                line = line[:line.index(Terminal)]+ ' ' + line[line.index(Terminal):]
-                line = line[:line.index(Terminal)+len(Terminal)] + ' ' + line[line.index(Terminal)+len(Terminal):]
-
+                line = line[:line.index(Terminal)] + ' ' + line[line.index(Terminal):]
+                line = line[:line.index(Terminal) + len(Terminal)] + ' ' + line[line.index(Terminal) + len(Terminal):]
 
     print(line)
     wordsInLine = line.split()
@@ -96,6 +92,7 @@ def sendNextToken():
     data = [tokens[0]]
 
     del tokens[0]
+
     print(data)
 
 
