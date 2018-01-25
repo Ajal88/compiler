@@ -41,7 +41,7 @@ for line in lines:
     wordsInLine = line.split()
     for words in wordsInLine:
 
-        if flag == True:
+        if flag:
             if words == '*/':
                 flag = False
                 continue
@@ -75,7 +75,6 @@ for line in lines:
                 reservedSymbolTable.append('==')
                 id = id + 1
 
-
             elif len(words) == 1:
                 letterPattern = re.compile('[A-Za-z]')
                 digitPattern = re.compile('[0-9]')
@@ -108,13 +107,9 @@ for line in lines:
                     symbolTable.append(words)
 
 
-def sendNextToken():
+def send_next_token():
     data = [tokens[0]]
 
     del tokens[0]
 
     return (data)
-
-
-
-
