@@ -104,7 +104,7 @@ for line in lines:
 
                 elif integerPattern.match(words):
                     array = ['integer', ID]
-                    tokens.append(dict)
+                    tokens.append(array)
                     symbolTable.append(words)
 
 
