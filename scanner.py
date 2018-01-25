@@ -2,8 +2,8 @@ import fileinput
 import re
 
 reservedWords = ['EOF', 'public', 'class', '{', 'static', 'void', 'main', '()', '}', 'extends', ';', '(', ')',
-                 'return', 'boolean', 'int', 'if', 'else', 'while', 'for', 'System.out.println', '.',
-                 'true', 'false', '&&', '==', '<', '>', '-', '*', '+', '//', '/*', '*/', ',', '=', '+=']
+                 'return', 'boolean', 'System.out.println', 'int', 'if', 'else', 'while', 'for',
+                 'true', 'false', '&&', '==', '<', '>', '+=', '-', '*', '+', '//', '/*', '*/', ',', '=', '.']
 
 tokens = []
 symbolTable = []
@@ -22,6 +22,13 @@ for line in lines:
     print(line)
     for Terminal in reservedWords:
         if Terminal in line:
+
+            if Terminal == 'System.out.println':
+                line = line.replace(Terminal, 'SOT')
+                continue
+            elif Terminal == '==':
+                line = line.replace(Terminal, ' EQEQ ')
+                continue
 
             if line.index(Terminal) == 0:
                 line = line[:len(Terminal)] + ' ' + line[len(Terminal):]
@@ -55,6 +62,19 @@ for line in lines:
                     tokens.append(array)
                     reservedSymbolTable.append(words)
                     id = id + 1
+
+            elif words == 'SOT':
+                array = ['System.out.println', id]
+                tokens.append(array)
+                reservedSymbolTable.append('System.out.println')
+                id = id + 1
+
+            elif words == 'EQEQ':
+                array = ['==', id]
+                tokens.append(array)
+                reservedSymbolTable.append('==')
+                id = id + 1
+
 
             elif len(words) == 1:
                 letterPattern = re.compile('[A-Za-z]')
