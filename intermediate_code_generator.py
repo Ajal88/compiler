@@ -1,9 +1,7 @@
 PB = []  # program block
 ss = []  # semantic stack
 all_sym = []  # all of the classes and methods
-last_token = [] # for id and types
-
-# changes added : for classes when we have var declarations we should add a dict to contain[] :{int|boolean : identifier}
+last_token = None  # for id and types
 
 
 class NameSpace:
@@ -95,9 +93,41 @@ def code_gen(action):
             method.contain.append(params[i])
             params[i].parent = method
             all_sym.append(params[i])
-        
+
+    elif action == 'Assign_Table_Param_First':
+        name = ss.pop()
+        type = ss.pop()
+        param = NameSpace()
+        param.name = name
+        param.type = type
+        ss.append(param)
+        ss.append(1)
+
+    elif action == 'Zero_Param':
+        ss.append(0)
+
+    elif action == 'Assign_Table_Param_Count':
+        name = ss.pop()
+        type = ss.pop()
+        param_count = ss.pop()
+        param = NameSpace()
+        param.name = name
+        param.type = type
+        ss.append(param)
+        ss.append(param_count + 1)
+
+    elif action == 'Type' or action == 'Id' or action == 'Int':
+        ss.append(last_token)
 
 
-def find_var(var_namespace):
-    # TODO find a var in parents recursively
+def find_var(var_name, var_parents):
+    # find a var in parents recursively
+    if var_parents is None:
+        return False
+    for p in var_parents:
+        for c in p.contain:
+            if c.name == var_name:
+                return True
+    for p in var_parents:
+        find_var(var_name, p.parents)
     pass
