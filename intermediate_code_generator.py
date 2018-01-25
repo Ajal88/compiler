@@ -1,6 +1,6 @@
 PB = []  # program block
 ss = []  # semantic stack
-
+all_sym = []  # all of the classes and methods
 
 class NameSpace:
     def __init__(self):
@@ -15,6 +15,7 @@ def code_gen(action):
         package = NameSpace()
         package.name = 'Package'
         ss.append(package)
+        all_sym.append(package)
     elif action == 'Assign_Table_Class':
         name = ss.pop()
         package = ss.pop()
@@ -23,11 +24,16 @@ def code_gen(action):
         cls.type = 'class'
         cls.parent.append(package)
         package.contain.append(cls)
+        ss.append(package)
         ss.append(cls)
+        all_sym.append(cls)
+        all_sym.append(package)
     elif action == 'Class_Extend':
         name_extend = ss.pop()
         name = ss.pop()
-        # TODO extender class read from symbol table and update it
+        for s in all_sym:
+            if s.name == name_extend:
+                name_extend = s
         name.parent.append(name_extend)
         name_extend.contain.append(name)
         ss.append(name)
@@ -37,3 +43,9 @@ def code_gen(action):
         main.type = 'void'
         main.parent.append(package)
         package.children.append(main)
+    elif action == 'Class_Find_Set':
+        # TODO search symbole table to find extender class
+        ss.append(found_class)
+    elif action == 'Assign_Table_Field':
+        # TODO search symbole table to update for static var
+
