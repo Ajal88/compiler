@@ -1,4 +1,4 @@
-from scanner import send_next_token
+from scanner import *
 
 ter = ['EOF', 'public', 'class', '{', 'static', 'void', 'main', '(', ')', '}', 'extends', ';',
        'return', ',', 'boolean', 'int', 'if', 'else', 'while', 'for', '=', '+', 'System.out.println', '*',
@@ -282,7 +282,8 @@ next_token = True
 top_stack = stack.pop()
 while top_stack != '$':
     if next_token:
-        token = send_next_token()[2][0]
+        token = send_next_token()[0]
+        # print(token)
         next_token = False
     if top_stack in ter:
         if top_stack == token:

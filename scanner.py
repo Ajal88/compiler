@@ -17,26 +17,15 @@ id = 0
 ID = 499
 
 for line in lines:
-    print("------")
-    print(line)
     for Terminal in reservedWords:
         if Terminal in line:
-
+            line = line.replace(Terminal, ' ' + Terminal + ' ', line.count(Terminal))
             if Terminal == 'System.out.println':
                 line = line.replace(Terminal, 'SOT')
                 continue
             elif Terminal == '==':
                 line = line.replace(Terminal, ' EQEQ ')
                 continue
-
-            if line.index(Terminal) == 0:
-                line = line[:len(Terminal)] + ' ' + line[len(Terminal):]
-
-            else:
-                line = line[:line.index(Terminal)] + ' ' + line[line.index(Terminal):]
-                line = line[:line.index(Terminal) + len(Terminal)] + ' ' + line[line.index(Terminal) + len(Terminal):]
-
-    print(line)
     wordsInLine = line.split()
     for words in wordsInLine:
 
@@ -107,8 +96,8 @@ for line in lines:
 
 
 def send_next_token():
-    data = [tokens[0]]
+    data = tokens[0]
 
     del tokens[0]
 
-    return (data)
+    return data
