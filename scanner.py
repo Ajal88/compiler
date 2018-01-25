@@ -96,7 +96,6 @@ def sendNextToken():
     data = [tokens[0]]
 
     del tokens[0]
-
     print(data)
 
 

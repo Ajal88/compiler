@@ -2,6 +2,9 @@ PB = []  # program block
 ss = []  # semantic stack
 all_sym = []  # all of the classes and methods
 
+# changes added : for classes when we have var declarations we should add a dict to contain[] :{int|boolean : identifier}
+
+
 class NameSpace:
     def __init__(self):
         self.contain = []
@@ -31,9 +34,13 @@ def code_gen(action):
     elif action == 'Class_Extend':
         name_extend = ss.pop()
         name = ss.pop()
+
         for s in all_sym:
             if s.name == name_extend:
                 name_extend = s
+
+        # TODO extender class read from symbol table and updates it
+
         name.parent.append(name_extend)
         name_extend.contain.append(name)
         ss.append(name)
@@ -43,6 +50,7 @@ def code_gen(action):
         main.type = 'void'
         main.parent.append(package)
         package.children.append(main)
+
     elif action == 'Class_Find_Set':
         # TODO search symbole table to find extender class
         ss.append(found_class)
