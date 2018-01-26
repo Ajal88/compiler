@@ -1,6 +1,18 @@
 from scanner import *
 from intermediate_code_generator import *
 
+
+class Color:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
 ter = ['EOF', 'public', 'class', '{', 'static', 'void', 'main', '(', ')', '}', 'extends', ';',
        'return', ',', 'boolean', 'int', 'if', 'else', 'while', 'for', '=', '+', 'System.out.println', '*',
        'true', 'false', '&&', 'identifier', 'integer', '-', '.', '==', '<', '$']
@@ -16,14 +28,17 @@ for rule in rules:
     rule = rule.rstrip()
     actions[i] = actions[i].rstrip()
     a_r[rule] = actions[i]
-    i += 1
     sp = rule.split(' ')
-    actions
+    ac = actions[i].split(' ')
+    for a in ac:
+        if a.startswith('#'):
+            action_symbol.append(a)
     for s in sp:
         if s == '->':
             break
         if s not in non_ter:
             non_ter.append(s)
+    i += 1
 i = 0
 # first and follow sets
 ff = {
@@ -337,12 +352,16 @@ ll1 = {
                    'for': '-1', '=': '-1', '+': '-1', 'System.out.println': '-1', '*': '-1', 'true': '-1',
                    'false': '-1', '&&': '-1', 'identifier': '-1', 'integer': '-1', '-': '-1', '.': '-1',
                    '==': 'Arguments5 -> RelTerm1 D Argument', '<': 'Arguments5 -> RelTerm1 D Argument', '$': '-1'}}
+# panic mod ll1 changes
+for fof in ff.keys():
+    for f in ff[fof]['follow']:
+        if ll1[fof][f] == '-1':
+            ll1[fof][f] = 'synch'
 
 # replace ll1 table with action rules
 for key in a_r.keys():
     for nt in non_ter:
         for item in ll1[nt].keys():
-            ll1[nt][item] = ll1[nt][item].rstrip()
             if ll1[nt][item] == key:
                 ll1[nt][item] = a_r[key]
 
@@ -353,13 +372,18 @@ top_stack = stack.pop()
 while top_stack != '$':
     if next_token:
         token = send_next_token()[0]
-        print(token)
+        # print(token)
         next_token = False
     if top_stack in ter:
         if top_stack == token:
             top_stack = stack.pop()
             next_token = True
             print(stack)
+        else:
+            if stack.__len__() > 2:
+                next_token = True
+            print(Color.WARNING + 'Warning: ' + top_stack + ' is missed! I add it!' + Color.ENDC)
+            top_stack = stack.pop()
     elif top_stack in non_ter:
         if ll1[top_stack][token] != '-1':
             rl = ll1[top_stack][token].split(' -> ')
@@ -367,8 +391,11 @@ while top_stack != '$':
                 if r != '':
                     stack.append(r)
             print(stack)
+        elif ll1[top_stack][token] == 'synch':
+            print(Color.WARNING + 'Warning: ' + top_stack + ' popped from stack!' + Color.ENDC)
         else:
-            break
+            print(Color.WARNING + 'Warning: ' + token + ' skipped from input!' + Color.ENDC)
+            next_token = True
         top_stack = stack.pop()
     elif top_stack in action_symbol:
         # code_gen(top_stack)

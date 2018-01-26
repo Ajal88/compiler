@@ -1,6 +1,6 @@
 import re
 
-global lookAhead, ID, operatorDetector
+ID = None
 lookAhead = 0
 operatorDetector = False
 lastLA = 0
@@ -138,7 +138,6 @@ def paranteses():
 
 while lookAhead < len(input):
 
-
     if input[lookAhead] == ' ':
         lookAhead += 1
 
@@ -161,9 +160,9 @@ while lookAhead < len(input):
 
 
     elif digitPattern.match(input[lookAhead]) or (
-                        operatorDetector == False and (
-                                input[lookAhead] == '+' or input[lookAhead] == '-') and digitPattern.match(
-                input[lookAhead + 1])):
+            operatorDetector == False and (
+            input[lookAhead] == '+' or input[lookAhead] == '-') and digitPattern.match(
+        input[lookAhead + 1])):
 
         isInteger()
 
@@ -196,8 +195,5 @@ while lookAhead < len(input):
 
     else:
         lookAhead += 1
-
-
-
 
 print(tokens)
