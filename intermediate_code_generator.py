@@ -1,9 +1,11 @@
-
-
 PB = []  # program block  memory : 1-99
 ss = []  # semantic stack
 all_sym = []  # all of the classes and methods
 last_token = None  # for id and types
+PB_Index = 0  # for pb[]
+Temp = []
+step = 1
+
 
 # data memory : 100-499
 # temp data memory : 500 -
@@ -127,11 +129,123 @@ def code_gen(action):
 
     elif action == 'Pid':
 
-        #Todo search for address in symbol table and push it to stack
+        # TODO search symbol table for address and push the address to stack
+
+        address = FindAddress()
+        ss.append(address)
+
+    elif action == 'Save':
+        ss.append(PB_Index)
+        PB_Index += 1
+
+    elif action == 'Jpf_Save':
+
+        index = ss.pop()
+        address = ss.pop()
+        PB[index] = "(JPF , " + address + "," + PB_Index + 1 + ", )"
+        ss.append(PB_Index)
+        PB_Index += 1
+
+    elif action == 'Jp':
+        index = ss.pop()
+        PB[index] = "(JP , " + PB_Index + ", , )"
 
 
+    elif action == 'Label':
+
+        ss.append(PB_Index)
+
+    elif action == 'While':
+
+        index = ss.pop()
+        content = ss.pop()
+        JPcontent = ss.pop()
+        PB[index] = "(JPF , " + content + "," + PB_Index + 1
+        ", )"
+        PB[PB_Index] = "(JP , " + JPcontent + ", , )"
+        PB_Index += 1
+
+    elif action == 'Assign':
+
+        source = ss.pop()
+        dest = ss.pop()
+        PB[PB_Index] = "(ASSIGN , " + source + ',' + dest + ", )"
+        PB_Index += 1
+
+    elif action == 'Cmp_Save':
+
+        t = Temp[0]
+        var1 = ss.pop()
+        var2 = ss.pop()
+        PB[PB_Index] = "(LT , " + var2 + "," + var1 + "," + t + ")"
+        PB_Index += 1
+        ss.append(var2)
+        ss.append(t)
+        ss.append(PB_Index)
+        PB_Index += 1
 
 
+    elif action == 'For':
+
+        var1 = ss.pop()
+        var2 = ss.pop()
+        var3 = ss.pop()
+        var4 = ss.pop()
+        var5 = var2 - 1
+        PB[PB_Index] = "(ADD , " + var1 + "," + var4 + "," + var4 + ")"
+        PB_Index += 1
+        PB[PB_Index] = "(JP , " + var5 + ", , )"
+        PB_Index += 1
+        PB[var2] = "(JPF , " + var3 + "," + PB_Index + ", )"
+
+    elif action == 'Step':
+        t = Temp[1]
+        PB[PB_Index] = "(ASSIGN , #" + step + "," + t + ", )"
+        step += 1
+        PB_Index += 1
+        ss.append(t)
+
+
+    elif action == 'Mult':
+        t = Temp[2]
+        var1 = ss.pop()
+        var2 = ss.pop()
+        PB[PB_Index] = "(MULT , " + var1 + "," + var2 + "," + t + ")"
+        PB_Index += 1
+        ss.append(t)
+
+    elif action == 'Add':
+        t = Temp[2]
+        var1 = ss.pop()
+        var2 = ss.pop()
+        PB[PB_Index] = "(ADD , " + var1 + "," + var2 + "," + t + ")"
+        PB_Index += 1
+        ss.append(t)
+
+    elif action == 'Sub':
+        t = Temp[2]
+        var1 = ss.pop()
+        var2 = ss.pop()
+        PB[PB_Index] = "(SUB , " + var1 + "," + var2 + "," + t + ")"
+        PB_Index += 1
+        ss.append(t)
+
+    elif action == 'Check_Equality':
+        t = Temp[2]
+        var1 = ss.pop()
+        var2 = ss.pop()
+        PB[PB_Index] = "(EQ , " + var1 + "," + var2 + "," + t + ")"
+        PB_Index += 1
+        ss.append(t)
+
+
+    elif action == 'Less_Than':
+        t = Temp[2]
+        var1 = ss.pop()
+        var2 = ss.pop()
+        PB[PB_Index] = "(LT , " + var1 + "," + var2 + "," + t + ")"
+        PB_Index += 1
+        ss.append(t)
 
 
 def find_var(var_name, var_parents):
@@ -145,3 +259,7 @@ def find_var(var_name, var_parents):
     for p in var_parents:
         find_var(var_name, p.parents)
     pass
+
+
+def FindAddress():
+    return "find address in symbol table"
