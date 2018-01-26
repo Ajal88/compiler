@@ -13,7 +13,7 @@ with open('test.txt') as test:
     lines = test.readlines()
 
 id = 0
-ID = 499
+ID = 100
 
 for line in lines:
     for Terminal in reservedWords:

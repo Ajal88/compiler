@@ -235,6 +235,14 @@ def code_gen(action):
         pb_index += 1
         ss.append(t)
 
+    elif action == 'And':
+        t = Temp[2]
+        var1 = ss.pop()
+        var2 = ss.pop()
+        PB[PB_Index] = "(AND , " + var1 + "," + var2 + "," + t + ")"
+        PB_Index += 1
+        ss.append(t)
+
 
 def find_var(var_name, var_parents):
     # find a var in parents recursively
