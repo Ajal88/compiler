@@ -1,7 +1,13 @@
-PB = []  # program block
+
+
+PB = []  # program block  memory : 1-99
 ss = []  # semantic stack
 all_sym = []  # all of the classes and methods
 last_token = None  # for id and types
+
+# data memory : 100-499
+# temp data memory : 500 -
+
 
 
 class NameSpace:
@@ -48,14 +54,14 @@ def code_gen(action):
         main = NameSpace()
         main.type = 'void'
         main.parent.append(package)
-        package.children.append(main)
+        package.contain.append(main)
         all_sym.append(main)
 
     elif action == 'Assign_Table_Field':
         var_name = ss.pop()
         var_type = ss.pop()
         parent = ss.pop()
-        # TODO search symbole table to update for static var
+        # TODO search symbol table to update for static var
         static_var = NameSpace()
         static_var.name = var_name
         static_var.type = var_type
@@ -67,7 +73,7 @@ def code_gen(action):
         var_name = ss.pop()
         var_type = ss.pop()
         parent = ss.pop()
-        # TODO search symbole table to update for var
+        # TODO search symbol table to update for var
         var = NameSpace()
         var.name = var_name
         var.type = var_type
@@ -118,6 +124,14 @@ def code_gen(action):
 
     elif action == 'Type' or action == 'Id' or action == 'Int':
         ss.append(last_token)
+
+    elif action == 'Pid':
+
+        #Todo search for address in symbol table and push it to stack
+
+
+
+
 
 
 def find_var(var_name, var_parents):

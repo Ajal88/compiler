@@ -7,7 +7,6 @@ reservedWords = ['EOF', 'public', 'class', '{', 'static', 'void', 'main', '()', 
 tokens = []
 symbolTable = []
 reservedSymbolTable = []
-
 flag = False
 
 with open('test.txt') as test:
@@ -28,7 +27,6 @@ for line in lines:
                 continue
     wordsInLine = line.split()
     for words in wordsInLine:
-
         if flag:
             if words == '*/':
                 flag = False
