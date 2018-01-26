@@ -1,34 +1,34 @@
 Goal -> Source EOF
 Source -> ClassDeclarations MainClass
-MainClass -> public class Identifier { public static void main ( ) { VarDeclarations Statements } }
+MainClass -> public class Identifier { public static void main ( ) #Main { VarDeclarations Statements } }
 ClassDeclarations -> ClassDeclaration ClassDeclarations
 ClassDeclarations -> ''
-ClassDeclaration -> class Identifier Extension { FieldDeclarations MethodDeclarations }
-Extension -> extends Identifier
-Extension -> ''
+ClassDeclaration -> class #Create_Package Identifier #Assign_Table_Class Extension { FieldDeclarations MethodDeclarations }
+Extension -> extends Identifier #Class_Find_Set
+Extension -> #Class_Extend 
 FieldDeclarations -> FieldDeclaration FieldDeclarations
 FieldDeclarations -> ''
-FieldDeclaration -> static Type Identifier ;
+FieldDeclaration -> static Type Identifier #Assign_Table_Field ;
 VarDeclarations -> VarDeclaration VarDeclarations
 VarDeclarations -> ''
-VarDeclaration -> Type Identifier ;
+VarDeclaration -> Type Identifier #Var_Dec ;
 MethodDeclarations -> MethodDeclaration MethodDeclarations
 MethodDeclarations -> ''
 MethodDeclaration -> public static Type Identifier ( Parameters ) { VarDeclarations Statements return GenExpression ; }
-Parameters -> Type Identifier Parameter
-Parameters -> ''
-Parameter -> , Type Identifier Parameter
+Parameters -> Type Identifier #Assign_Table_Param_First Parameter
+Parameters -> #Zero_Param
+Parameter -> , Type Identifier #Assign_Table_Param_Count Parameter
 Parameter -> ''
-Type -> boolean
-Type -> int
+Type -> boolean #Type
+Type -> int #Type
 Statements -> A
 A -> Statement A
 A -> ''
 Statement -> { Statements }
-Statement -> if ( GenExpression ) Statement else Statement
-Statement -> while ( GenExpression ) Statement
-Statement -> for ( Identifier = Integer ; RelTerm ; Identifier + = Integer ) Statement
-Statement -> Identifier = GenExpression ;
+Statement -> if ( GenExpression ) #save Statement else #jpf_save Statement #jp
+Statement -> while #label ( GenExpression ) Statement #while
+Statement -> for #pid #pid ( Identifier = Integer #assign ; RelTerm #cmp_save ; Identifier + = Integer ) #step Statement #for
+Statement -> #pid Identifier = GenExpression #assign ;
 Statement -> System.out.println ( GenExpression ) ;
 GenExpression -> Factor C B E
 E ->  RelTerm1 D
@@ -37,16 +37,16 @@ Expression -> Term B
 B -> Expression1 B
 B -> ''
 Term -> Factor C
-C -> * Factor C
+C -> * Factor #mult C
 C -> ''
-Factor -> Identifier Factor2
+Factor -> #pid Identifier Factor2
 Factor -> ( Expression )
 Factor -> true
 Factor -> false
 Factor -> Integer
-D -> && RelTerm D
+D -> && RelTerm D #and
 D -> ''
-RelTerm -> Identifier Factor2 C B RelTerm1
+RelTerm -> #pid Identifier Factor2 C B RelTerm1
 RelTerm -> ( Expression ) C B RelTerm1
 RelTerm -> true C B RelTerm1
 RelTerm -> false C B RelTerm1
@@ -54,21 +54,21 @@ RelTerm -> Integer C B RelTerm1
 Arguments -> Integer C B Arguments5
 Arguments -> false C B Arguments4
 Arguments -> true C B Arguments3
-Arguments -> Identifier Factor2 C B Arguments2
+Arguments -> #pid Identifier Factor2 C B Arguments2
 Arguments -> ( Expression ) C B Arguments1
 Arguments -> ''
 Argument -> , GenExpression Argument
 Argument -> ''
-Identifier -> identifier
+Identifier -> #pid identifier
 Integer -> integer
-Expression1 -> + Term
-Expression1 -> - Term
+Expression1 -> + Term #add
+Expression1 -> - Term #sub
 Factor1 -> ( Arguments )
 Factor1 -> ''
-Factor2 -> . Identifier Factor1
+Factor2 -> . #pid Identifier Factor1
 Factor2 -> ''
-RelTerm1 -> == Expression
-RelTerm1 -> < Expression
+RelTerm1 -> == Expression #EQ
+RelTerm1 -> < Expression #LT
 Arguments1 -> Argument
 Arguments1 -> RelTerm1 D Argument
 Arguments2 -> Argument

@@ -1,4 +1,5 @@
 from scanner import *
+from intermediate_code_generator import *
 
 ter = ['EOF', 'public', 'class', '{', 'static', 'void', 'main', '(', ')', '}', 'extends', ';',
        'return', ',', 'boolean', 'int', 'if', 'else', 'while', 'for', '=', '+', 'System.out.println', '*',
@@ -6,20 +7,28 @@ ter = ['EOF', 'public', 'class', '{', 'static', 'void', 'main', '(', ')', '}', '
 non_ter = []
 action_symbol = []
 file = open('grammar.txt', 'r')
+file_action = open('grammar_action.txt', 'r')
 rules = file.readlines()
+actions = file_action.readlines()
+a_r = dict()
 i = 0
 for rule in rules:
     rule = rule.rstrip()
+    actions[i] = actions[i].rstrip()
+    a_r[rule] = actions[i]
+    i += 1
     sp = rule.split(' ')
+    actions
     for s in sp:
         if s == '->':
             break
         if s not in non_ter:
             non_ter.append(s)
+i = 0
 # first and follow sets
 ff = {
-    'Goal': {'first': ['ℇ', 'public', 'EOF', 'class'], 'follow': ['$']},
-    'Source': {'first': ['ℇ', 'public', 'class'], 'follow': ['EOF']},
+    'Goal': {'first': ['public', 'class'], 'follow': ['$']},
+    'Source': {'first': ['public', 'class'], 'follow': ['EOF']},
     'MainClass': {'first': ['public'], 'follow': ['EOF']},
     'ClassDeclarations': {'first': ['ℇ', 'class'], 'follow': ['public']},
     'ClassDeclaration': {'first': ['class'], 'follow': ['public', 'class']},
@@ -71,7 +80,7 @@ ff = {
 
 # parse table
 ll1 = {
-    'Goal': {'EOF': 'Goal -> Source EOF', 'public': 'Goal -> Source EOF', 'class': 'Goal -> Source EOF', '{': '-1',
+    'Goal': {'EOF': '-1', 'public': 'Goal -> Source EOF', 'class': 'Goal -> Source EOF', '{': '-1',
              'static': '-1', 'void': '-1', 'main': '-1', '(': '-1', ')': '-1', '}': '-1', 'extends': '-1', ';': '-1',
              'return': '-1', ',': '-1', 'boolean': '-1', 'int': '-1', 'if': '-1', 'else': '-1', 'while': '-1',
              'for': '-1', '=': '-1', '+': '-1', 'System.out.println': '-1', '*': '-1', 'true': '-1', 'false': '-1',
@@ -328,6 +337,15 @@ ll1 = {
                    'for': '-1', '=': '-1', '+': '-1', 'System.out.println': '-1', '*': '-1', 'true': '-1',
                    'false': '-1', '&&': '-1', 'identifier': '-1', 'integer': '-1', '-': '-1', '.': '-1',
                    '==': 'Arguments5 -> RelTerm1 D Argument', '<': 'Arguments5 -> RelTerm1 D Argument', '$': '-1'}}
+
+# replace ll1 table with action rules
+for key in a_r.keys():
+    for nt in non_ter:
+        for item in ll1[nt].keys():
+            ll1[nt][item] = ll1[nt][item].rstrip()
+            if ll1[nt][item] == key:
+                ll1[nt][item] = a_r[key]
+
 # parsing chapter
 stack = ['$', 'Goal']
 next_token = True
@@ -353,5 +371,5 @@ while top_stack != '$':
             break
         top_stack = stack.pop()
     elif top_stack in action_symbol:
-        code_gen(top_stack)
+        # code_gen(top_stack)
         top_stack = stack.pop()

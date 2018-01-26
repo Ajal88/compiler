@@ -139,7 +139,7 @@ def code_gen(action):
     elif action == 'Jpf_Save':
         index = ss.pop()
         address = ss.pop()
-        PB[index] = "(JPF , " + address + "," + pb_index + 1 + ", )"
+        PB[index] = "(JPF , " + address + "," + str(pb_index + 1) + ", )"
         ss.append(pb_index)
         pb_index += 1
 
