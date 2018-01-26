@@ -1,12 +1,12 @@
 PB = []  # program block  memory : 1-99
 ss = []  # semantic stack
-all_sym = []  # all of the classes and methods
+all_sym = []  # all of the classes and methods # TODO must have numeric address
 last_token = None  # for id and types
 pb_index = 0  # for pb[]
-temp = []
+temp = []  # TODO this temp must have numeric address
 step = 1
 
-
+# TODO parisa in action symbolato dorost kon, koochik bozorgishoon raAyat nashide!
 # data memory : 100-499
 # temp data memory : 500 -
 
@@ -130,6 +130,7 @@ def code_gen(action):
     elif action == 'Pid':
         # TODO search symbol table for address and push the address to stack
         address = find_address()
+        print(address)
         ss.append(address)
 
     elif action == 'Save':
@@ -203,7 +204,7 @@ def code_gen(action):
         pb_index += 1
         ss.append(t)
 
-    elif action == 'Add':
+    elif action == 'add':
         t = temp[2]
         var1 = ss.pop()
         var2 = ss.pop()

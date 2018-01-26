@@ -378,7 +378,7 @@ while top_stack != '$':
         if top_stack == token:
             top_stack = stack.pop()
             next_token = True
-            print(stack)
+            # print(stack)
         else:
             if stack.__len__() > 2:
                 next_token = True
@@ -390,7 +390,7 @@ while top_stack != '$':
             for r in reversed(rl[1].split(' ')):
                 if r != '':
                     stack.append(r)
-            print(stack)
+            # print(stack)
         elif ll1[top_stack][token] == 'synch':
             print(Color.WARNING + 'Warning: ' + top_stack + ' popped from stack!' + Color.ENDC)
         else:
@@ -398,5 +398,8 @@ while top_stack != '$':
             next_token = True
         top_stack = stack.pop()
     elif top_stack in action_symbol:
-        # code_gen(top_stack)
+        top_stack = top_stack.replace('#', '')
+        # print(top_stack)
+        code_gen(top_stack)
+        # print(ss)
         top_stack = stack.pop()
