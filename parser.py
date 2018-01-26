@@ -16,6 +16,58 @@ for rule in rules:
             break
         if s not in non_ter:
             non_ter.append(s)
+# first and follow sets
+ff = {
+    'Goal': {'first': ['ℇ', 'public', 'EOF', 'class'], 'follow': ['$']},
+    'Source': {'first': ['ℇ', 'public', 'class'], 'follow': ['EOF']},
+    'MainClass': {'first': ['public'], 'follow': ['EOF']},
+    'ClassDeclarations': {'first': ['ℇ', 'class'], 'follow': ['public']},
+    'ClassDeclaration': {'first': ['class'], 'follow': ['public', 'class']},
+    'Extension': {'first': ['extends', 'ℇ'], 'follow': ['{']},
+    'FieldDeclarations': {'first': ['ℇ', 'static'], 'follow': ['public', 'class', '}']},
+    'FieldDeclaration': {'first': ['static'], 'follow': ['public', 'class', '}', 'static']},
+    'VarDeclarations': {'first': ['ℇ', 'boolean', 'int'],
+                        'follow': ['EOF', '{', 'if', 'while', 'for', 'System.out.println', 'identifier', '}',
+                                   'public', 'return']},
+    'VarDeclaration': {'first': ['boolean', 'int'],
+                       'follow': ['EOF', '{', 'if', 'while', 'for', 'System.out.println', 'identifier', '}',
+                                  'boolean', 'int', 'public', 'return']},
+    'MethodDeclarations': {'first': ['ℇ', 'public'], 'follow': ['}']},
+    'MethodDeclaration': {'first': ['public'], 'follow': ['}', 'public']},
+    'Parameters': {'first': ['ℇ', 'boolean', 'int'], 'follow': [')']},
+    'Parameter': {'first': [',', 'ℇ'], 'follow': [')']},
+    'Type': {'first': ['boolean', 'int'], 'follow': ['identifier']},
+    'Statements': {'first': ['ℇ', '{', 'if', 'while', 'for', 'System.out.println', 'identifier'],
+                   'follow': ['}', 'return']},
+    'A': {'first': ['ℇ', '{', 'if', 'while', 'for', 'System.out.println', 'identifier'], 'follow': ['}', 'return']},
+    'Statement': {'first': ['{', 'if', 'while', 'for', 'System.out.println', 'identifier'],
+                  'follow': ['}', 'return', '{', 'if', 'while', 'for', 'System.out.println', 'identifier', 'else']},
+    'GenExpression': {'first': ['(', 'true', 'false', 'identifier', 'integer'], 'follow': [';', ')', ',']},
+    'E': {'first': ['ℇ', '==', '<'], 'follow': [';', ')', ',']},
+    'Expression': {'first': ['(', 'true', 'false', 'identifier', 'integer'], 'follow': [')', '&&', ';', ',']},
+    'B': {'first': ['ℇ', '+', '-'], 'follow': [';', ')', '==', '<', ',', '&&']},
+    'Term': {'first': ['(', 'true', 'false', 'identifier', 'integer'],
+             'follow': ['+', '-', ';', ')', '==', '<', '&&', ',']},
+    'C': {'first': ['*', 'ℇ'], 'follow': [';', ')', '+', '-', '==', '<', '&&', ',']},
+    'Factor': {'first': ['(', 'true', 'false', 'identifier', 'integer'],
+               'follow': ['*', ';', ')', '+', '-', '==', '<', ',', '&&']},
+    'D': {'first': ['&&', 'ℇ'], 'follow': [';', ')', ',']},
+    'RelTerm': {'first': ['(', 'true', 'false', 'identifier', 'integer'], 'follow': [';', '&&', ')', ',']},
+    'Arguments': {'first': ['false', 'true', '(', 'ℇ', 'integer', 'identifier'], 'follow': [')']},
+    'Argument': {'first': [',', 'ℇ'], 'follow': [')']},
+    'Identifier': {'first': ['identifier'],
+                   'follow': ['{', 'extends', 'public', 'class', ';', '(', ',', ')', '=', '+', '.', '*', '-', '==',
+                              '<', '&&']},
+    'Integer': {'first': ['integer'], 'follow': [';', ')', '*', '+', '-', '==', '<', '&&', ',']},
+    'Expression1': {'first': ['+', '-'], 'follow': [';', ')', '==', '<', '+', '-', ',', '&&']},
+    'Factor1': {'first': ['(', 'ℇ'], 'follow': ['*', ';', ')', '+', '-', '==', '<', '&&', ',']},
+    'Factor2': {'first': ['.', 'ℇ'], 'follow': ['*', ';', ')', '+', '-', '==', '<', '&&', ',']},
+    'RelTerm1': {'first': ['==', '<'], 'follow': ['&&', ';', ')', ',']},
+    'Arguments1': {'first': [',', 'ℇ', '==', '<'], 'follow': [')']},
+    'Arguments2': {'first': [',', 'ℇ', '==', '<'], 'follow': [')']},
+    'Arguments3': {'first': [',', 'ℇ', '==', '<'], 'follow': [')']},
+    'Arguments4': {'first': [',', 'ℇ', '==', '<'], 'follow': [')']},
+    'Arguments5': {'first': [',', 'ℇ', '==', '<'], 'follow': [')']}}
 
 # parse table
 ll1 = {
@@ -283,20 +335,20 @@ top_stack = stack.pop()
 while top_stack != '$':
     if next_token:
         token = send_next_token()[0]
-        # print(token)
+        print(token)
         next_token = False
     if top_stack in ter:
         if top_stack == token:
             top_stack = stack.pop()
             next_token = True
-            # print(stack)
+            print(stack)
     elif top_stack in non_ter:
         if ll1[top_stack][token] != '-1':
             rl = ll1[top_stack][token].split(' -> ')
             for r in reversed(rl[1].split(' ')):
                 if r != '':
                     stack.append(r)
-            # print(stack)
+            print(stack)
         else:
             break
         top_stack = stack.pop()
