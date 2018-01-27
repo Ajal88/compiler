@@ -118,10 +118,10 @@ def code_gen(action, symbole_table):
         for i in range(param_num):
             params[i] = ss.pop()
         m_name = ss.pop()
-        m_type = ss.pop()
+        m_type = ss.pop()[0]
         m_parent = ss.pop()
         method = NameSpace()
-        method.name = m_name
+        method.name = symbole_table[m_name[1]]['name']
         method.type = 'method'
         method.return_type = m_type
         method.parent.append(m_parent)
@@ -142,7 +142,7 @@ def code_gen(action, symbole_table):
         param.address = name[1]
         param.type = typ
         ss.append(param)
-        symbole_table[param.address].type = typ
+        symbole_table[param.address]['type'] = typ
         ss.append(1)
 
     elif action == 'Zero_Param':
