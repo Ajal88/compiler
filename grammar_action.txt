@@ -14,7 +14,7 @@ VarDeclarations -> ''
 VarDeclaration -> Type Identifier #Var_Dec ;
 MethodDeclarations -> MethodDeclaration MethodDeclarations
 MethodDeclarations -> ''
-MethodDeclaration -> public static Type Identifier ( Parameters ) #Assign_Table_Method { VarDeclarations Statements return GenExpression ; }
+MethodDeclaration -> public static Type Identifier ( Parameters ) #Assign_Table_Method { VarDeclarations Statements return GenExpression ; #Jp_Return }
 Parameters -> Type Identifier #Assign_Table_Param_First Parameter
 Parameters -> #Zero_Param
 Parameter -> , Type Identifier #Assign_Table_Param_Count Parameter
@@ -27,8 +27,8 @@ A -> ''
 Statement -> { Statements }
 Statement -> if ( GenExpression ) #Save Statement else #Jpf_Save Statement #Jp
 Statement -> while #Label ( GenExpression ) Statement #While
-Statement -> for ( #Pid #Pid Identifier = Integer #Assign ; RelTerm #Cmp_Save ; Identifier + = Integer ) #step Statement #For
-Statement -> #Pid Identifier = GenExpression #Assign ;
+Statement -> for ( Identifier = Integer #Assign ; RelTerm #Cmp_Save ; Identifier + = Integer ) #step Statement #For
+Statement -> Identifier = GenExpression #Assign ;
 Statement -> System.out.println ( GenExpression ) #Print ;
 GenExpression -> Factor C B E
 E ->  RelTerm1 D
@@ -39,14 +39,14 @@ B -> ''
 Term -> Factor C
 C -> * Factor #Mult C
 C -> ''
-Factor -> #Pid Identifier Factor2
+Factor -> Identifier Factor2
 Factor -> ( Expression )
 Factor -> true
 Factor -> false
-Factor -> Integer
+Factor -> Integer #Int
 D -> && RelTerm D #And
 D -> ''
-RelTerm -> #Pid Identifier Factor2 C B RelTerm1
+RelTerm -> Identifier Factor2 C B RelTerm1
 RelTerm -> ( Expression ) C B RelTerm1
 RelTerm -> true C B RelTerm1
 RelTerm -> false C B RelTerm1
@@ -54,28 +54,28 @@ RelTerm -> Integer C B RelTerm1
 Arguments -> Integer C B Arguments5
 Arguments -> false C B Arguments4
 Arguments -> true C B Arguments3
-Arguments -> #Pid Identifier Factor2 C B Arguments2
+Arguments -> Identifier Factor2 C B Arguments2
 Arguments -> ( Expression ) C B Arguments1
-Arguments -> ''
-Argument -> , GenExpression Argument
-Argument -> ''
+Arguments -> #Zero_Arg
+Argument -> , GenExpression #Arg_Count Argument
+Argument -> #Last_Arg
 Identifier -> #Pid identifier
-Integer -> integer
+Integer -> #Int integer
 Expression1 -> + Term #Add
 Expression1 -> - Term #Sub
-Factor1 -> ( Arguments ) #Method_Call
+Factor1 -> ( Arguments )
 Factor1 -> #Var_Call
-Factor2 -> . #Pid Identifier Factor1
+Factor2 -> . Identifier Factor1
 Factor2 -> ''
 RelTerm1 -> == Expression #EQ
 RelTerm1 -> < Expression #LT
-Arguments1 -> Argument
-Arguments1 -> RelTerm1 D Argument
-Arguments2 -> Argument
-Arguments2 -> RelTerm1 D Argument
-Arguments3 -> Argument
-Arguments3 -> RelTerm1 D Argument
-Arguments4 -> Argument
-Arguments4 -> RelTerm1 D Argument
-Arguments5 -> Argument
-Arguments5 -> RelTerm1 D Argument
+Arguments1 -> #First_Arg Argument
+Arguments1 -> RelTerm1 D #First_Arg Argument
+Arguments2 -> #First_Arg Argument
+Arguments2 -> RelTerm1 D #First_Arg Argument
+Arguments3 -> #First_Arg Argument
+Arguments3 -> RelTerm1 D #First_Arg Argument
+Arguments4 -> #First_Arg Argument
+Arguments4 -> RelTerm1 D #First_Arg Argument
+Arguments5 -> #First_Arg Argument
+Arguments5 -> RelTerm1 D #First_Arg Argument

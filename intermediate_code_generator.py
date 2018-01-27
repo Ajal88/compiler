@@ -8,6 +8,17 @@ adr = 100  # data memory : 100-499
 tmp_adr = 500  # temp data memor/.y : 500 -
 
 
+class Color:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
 def get_temp():
     global temp, tmp_adr
     temp[tmp_adr] = None
@@ -33,12 +44,13 @@ def code_gen(action, symbole_table):
         package.name = 'Package'
         ss.append(package)
         all_sym.append(package)
+        pb_index += 1
 
     elif action == 'Assign_Table_Class':
         name = ss.pop()  # must be a token ['type', addr]
         package = ss.pop()
         cls = NameSpace()
-        cls.name = symbole_table[name[1]].name
+        cls.name = symbole_table[name[1]]['name']
         cls.type = 'class'
         cls.parent.append(package)
         package.contain.append(cls)
@@ -50,26 +62,33 @@ def code_gen(action, symbole_table):
     elif action == 'Class_Extend':
         name_extend = ss.pop()
         name = ss.pop()
+        find = False
         for s in all_sym:
-            if s.name == symbole_table[name_extend[1]].name:
+            if s.name == symbole_table[name_extend[1]]['name']:
                 name_extend = s
+                find = True
+        if not find:
+            print(Color.FAIL + 'Class ' + str(symbole_table[name_extend[1]]['name']) + ' does not exist!' + Color.ENDC)
         name.parent.append(name_extend)
         name_extend.contain.append(name)
         ss.append(name)
 
     elif action == 'Main':
+        PB[0] = '(JP , ' + str(pb_index) + ', , )'
+        pb_index += 1
         package = ss.pop()
         main = NameSpace()
         main.return_type = 'void'
         main.type = 'method'
         main.return_address = get_temp()
         main.parent.append(package)
+        main.address = pb_index
         package.contain.append(main)
         all_sym.append(main)
 
     elif action == 'Assign_Table_Field':
         var_name = ss.pop()
-        var_type = ss.pop()
+        var_type = ss.pop()[0]
         parent = ss.pop()
         static_var = NameSpace()
         static_var.name = var_name[0]
@@ -82,10 +101,10 @@ def code_gen(action, symbole_table):
 
     elif action == 'Var_Dec':
         var_name = ss.pop()
-        var_type = ss.pop()
+        var_type = ss.pop()[0]
         parent = ss.pop()
         var = NameSpace()
-        var.name = var_name[0]
+        var.name = symbole_table[var_name[1]]['name']
         var.type = var_type
         var.address = var_name[1]
         var.parent.append(parent)
