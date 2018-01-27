@@ -11,5 +11,5 @@ public static void main ( ) {
 int b ;
 b = 3 ;
 b = Cls.test ( b , false ) ; System.out.println(b) ;
-} }
+}
 EOF

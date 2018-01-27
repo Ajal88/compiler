@@ -1,0 +1,81 @@
+Goal -> Source EOF
+Source -> ClassDeclarations MainClass
+MainClass -> public class Identifier { public static void main ( ) #Main { VarDeclarations Statements } }
+ClassDeclarations -> ClassDeclaration ClassDeclarations
+ClassDeclarations -> ''
+ClassDeclaration -> class #Create_Package Identifier #Assign_Table_Class Extension { FieldDeclarations MethodDeclarations }
+Extension -> extends Identifier #Class_Extend
+Extension -> ''
+FieldDeclarations -> FieldDeclaration FieldDeclarations
+FieldDeclarations -> ''
+FieldDeclaration -> static Type Identifier #Assign_Table_Field ;
+VarDeclarations -> VarDeclaration VarDeclarations
+VarDeclarations -> ''
+VarDeclaration -> Type Identifier #Var_Dec ;
+MethodDeclarations -> MethodDeclaration MethodDeclarations
+MethodDeclarations -> ''
+MethodDeclaration -> public static Type Identifier ( Parameters ) #Assign_Table_Method { VarDeclarations Statements return GenExpression ; }
+Parameters -> Type Identifier #Assign_Table_Param_First Parameter
+Parameters -> #Zero_Param
+Parameter -> , Type Identifier #Assign_Table_Param_Count Parameter
+Parameter -> ''
+Type -> boolean #Type
+Type -> int #Type
+Statements -> A
+A -> Statement A
+A -> ''
+Statement -> { Statements }
+Statement -> if ( GenExpression ) #Save Statement else #Jpf_Save Statement #Jp
+Statement -> while #Label ( GenExpression ) Statement #While
+Statement -> for ( #Pid #Pid Identifier = Integer #Assign ; RelTerm #Cmp_Save ; Identifier + = Integer ) #step Statement #For
+Statement -> #Pid Identifier = GenExpression #Assign ;
+Statement -> System.out.println ( GenExpression ) #Print ;
+GenExpression -> Factor C B E
+E ->  RelTerm1 D
+E -> ''
+Expression -> Term B
+B -> Expression1 B
+B -> ''
+Term -> Factor C
+C -> * Factor #Mult C
+C -> ''
+Factor -> #Pid Identifier Factor2
+Factor -> ( Expression )
+Factor -> true
+Factor -> false
+Factor -> Integer
+D -> && RelTerm D #And
+D -> ''
+RelTerm -> #Pid Identifier Factor2 C B RelTerm1
+RelTerm -> ( Expression ) C B RelTerm1
+RelTerm -> true C B RelTerm1
+RelTerm -> false C B RelTerm1
+RelTerm -> Integer C B RelTerm1
+Arguments -> Integer C B Arguments5
+Arguments -> false C B Arguments4
+Arguments -> true C B Arguments3
+Arguments -> #Pid Identifier Factor2 C B Arguments2
+Arguments -> ( Expression ) C B Arguments1
+Arguments -> ''
+Argument -> , GenExpression Argument
+Argument -> ''
+Identifier -> #Pid identifier
+Integer -> integer
+Expression1 -> + Term #Add
+Expression1 -> - Term #Sub
+Factor1 -> ( Arguments ) #Method_Call
+Factor1 -> #Var_Call
+Factor2 -> . #Pid Identifier Factor1
+Factor2 -> ''
+RelTerm1 -> == Expression #EQ
+RelTerm1 -> < Expression #LT
+Arguments1 -> Argument
+Arguments1 -> RelTerm1 D Argument
+Arguments2 -> Argument
+Arguments2 -> RelTerm1 D Argument
+Arguments3 -> Argument
+Arguments3 -> RelTerm1 D Argument
+Arguments4 -> Argument
+Arguments4 -> RelTerm1 D Argument
+Arguments5 -> Argument
+Arguments5 -> RelTerm1 D Argument

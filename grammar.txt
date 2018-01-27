@@ -1,6 +1,6 @@
 Goal -> Source EOF
 Source -> ClassDeclarations MainClass
-MainClass -> public class Identifier { public static void main () { VarDeclarations Statements }}
+MainClass -> public class Identifier { public static void main ( ) { VarDeclarations Statements } }
 ClassDeclarations -> ClassDeclaration ClassDeclarations
 ClassDeclarations -> ''
 ClassDeclaration -> class Identifier Extension { FieldDeclarations MethodDeclarations }

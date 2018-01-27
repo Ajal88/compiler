@@ -9,7 +9,7 @@ symbolTable = []
 reservedSymbolTable = []
 flag = False
 
-with open('test.txt') as test:
+with open('in.txt') as test:
     lines = test.readlines()
 
 id = 0
