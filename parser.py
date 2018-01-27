@@ -372,6 +372,7 @@ top_stack = stack.pop()
 while top_stack != '$':
     if next_token:
         last_token = send_next_token()
+        print(last_token)
         token = last_token[0]
         # print(token)
         next_token = False
@@ -400,8 +401,8 @@ while top_stack != '$':
         top_stack = stack.pop()
     elif top_stack in action_symbol:
         top_stack = top_stack.replace('#', '')
-        # print(top_stack)
-        code_gen(top_stack, symbolTable)
+        print(top_stack)
+        code_gen(top_stack, symbolTable, last_token)
         # print(ss)
         top_stack = stack.pop()
 

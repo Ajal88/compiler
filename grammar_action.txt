@@ -19,8 +19,8 @@ Parameters -> Type Identifier #Assign_Table_Param_First Parameter
 Parameters -> #Zero_Param
 Parameter -> , Type Identifier #Assign_Table_Param_Count Parameter
 Parameter -> ''
-Type -> boolean #Type
-Type -> int #Type
+Type -> #Type boolean
+Type -> #Type int
 Statements -> A
 A -> Statement A
 A -> ''
@@ -43,7 +43,7 @@ Factor -> Identifier Factor2
 Factor -> ( Expression )
 Factor -> true
 Factor -> false
-Factor -> Integer #Int
+Factor -> Integer
 D -> && RelTerm D #And
 D -> ''
 RelTerm -> Identifier Factor2 C B RelTerm1
