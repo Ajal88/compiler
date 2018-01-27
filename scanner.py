@@ -2,7 +2,7 @@ import re
 
 reservedWords = ['EOF', 'public', 'class', '{', 'static', 'void', 'main', '()', '}', 'extends', ';', '(', ')',
                  'return', 'boolean', 'System.out.println', 'int', 'if', 'else', 'while', 'for',
-                 'true', 'false', '&&', '==', '<', '>', '+=', '-', '*', '+', '//', '/*', '*/', ',', '=', '.']
+                 'true', 'false', '&&', '==', '<', '>', '+=', '-', '*', '+', '//', '/*', '*/', ',', '=', '.' , '$']
 
 tokens = []
 symbolTable = []
@@ -16,15 +16,17 @@ id = 0
 ID = 100
 
 for line in lines:
-    for Terminal in reservedWords:
-        if Terminal in line:
-            line = line.replace(Terminal, ' ' + Terminal + ' ', line.count(Terminal))
-            if Terminal == 'System.out.println':
-                line = line.replace(Terminal, 'SOT')
-                continue
-            elif Terminal == '==':
-                line = line.replace(Terminal, ' EQEQ ')
-                continue
+
+
+    # for Terminal in reservedWords:
+    #     if Terminal in line:
+    #         line = line.replace(Terminal, ' ' + Terminal + ' ', line.count(Terminal))
+    #         if Terminal == 'System.out.println':
+    #             line = line.replace(Terminal, 'SOT')
+    #             continue
+    #         elif Terminal == '==':
+    #             line = line.replace(Terminal, ' EQEQ ')
+    #             continue
     wordsInLine = line.split()
     for words in wordsInLine:
         if flag:

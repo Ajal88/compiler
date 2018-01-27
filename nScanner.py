@@ -1,6 +1,7 @@
 import re
 
-global lookAhead, ID, operatorDetector
+global lookAhead, ID,   id
+
 lookAhead = 0
 operatorDetector = False
 lastLA = 0
