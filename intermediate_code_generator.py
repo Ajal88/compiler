@@ -5,7 +5,7 @@ last_token = None  # for id and types
 pb_index = 0  # for pb[]
 temp = dict()
 adr = 100  # data memory : 100-499
-tmp_adr = 500  # temp data memory : 500 -
+tmp_adr = 500  # temp data memor/.y : 500 -
 
 
 def get_temp():
@@ -38,7 +38,7 @@ def code_gen(action, symbole_table):
         name = ss.pop()  # must be a token ['type', addr]
         package = ss.pop()
         cls = NameSpace()
-        cls.name = name[0]
+        cls.name = symbole_table[name[1]].name
         cls.type = 'class'
         cls.parent.append(package)
         package.contain.append(cls)
@@ -51,7 +51,7 @@ def code_gen(action, symbole_table):
         name_extend = ss.pop()
         name = ss.pop()
         for s in all_sym:
-            if s.name == name_extend[0]:
+            if s.name == symbole_table[name_extend[1]].name:
                 name_extend = s
         name.parent.append(name_extend)
         name_extend.contain.append(name)
@@ -107,6 +107,8 @@ def code_gen(action, symbole_table):
         method.return_type = m_type
         method.parent.append(m_parent)
         method.address = pb_index
+        t = get_temp()
+        method.return_address = t[1]
         all_sym.append(method)
         for i in range(param_num):
             method.contain.append(params[i])
@@ -258,6 +260,15 @@ def code_gen(action, symbole_table):
         PB[pb_index] = '(PRINT , ' + output + ' )'
 
     elif action == 'Var_Call':
+        var = ss.pop()
+        cls = ss.pop()
+        for a in all_sym:
+            if symbole_table(var[1])['name'] == a.name:
+                for c in a.parent:
+                    if c.name == symbole_table(cls[1])['name']:
+                        var = a
+                        ss.append(var.address)
+                        break
 
     elif action == 'First_Arg':
         ss.append(1)
@@ -269,7 +280,7 @@ def code_gen(action, symbole_table):
         res = ss.pop()
         cnt = ss.pop()
         ss.append(res)
-        ss.append(cnt+1)
+        ss.append(cnt + 1)
     elif action == 'Last_Arg':
         arg_count = ss.pop()
         ar = []
@@ -291,7 +302,13 @@ def code_gen(action, symbole_table):
         r_val = ss.pop()
         j_address = ss.pop()
         mtd = ss.pop()
-        mtd.return_address = j_address
+        cls = ss.pop()
+        PB[pb_index] = '(ASSIGN , ' + mtd.return_address + ', #' + j_address + ', )'
+        pb_index += 1
+        PB[pb_index] = '(JP , @' + mtd.return_address + ' )'
+        pb_index += 1
+        ss.append(r_val)
+
 
 def find_var(var_name, var_parents):
     # find a var in parents recursively
@@ -304,4 +321,3 @@ def find_var(var_name, var_parents):
     for p in var_parents:
         find_var(var_name, p.parents)
     pass
-
