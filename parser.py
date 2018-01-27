@@ -371,7 +371,8 @@ next_token = True
 top_stack = stack.pop()
 while top_stack != '$':
     if next_token:
-        token = send_next_token()[0]
+        last_token = send_next_token()
+        token = last_token[0]
         # print(token)
         next_token = False
     if top_stack in ter:
@@ -400,6 +401,13 @@ while top_stack != '$':
     elif top_stack in action_symbol:
         top_stack = top_stack.replace('#', '')
         # print(top_stack)
-        code_gen(top_stack)
+        code_gen(top_stack, symbolTable)
         # print(ss)
         top_stack = stack.pop()
+
+# create output file
+o = ''
+for p in PB:
+    o += str(p) + '\n'
+out = open('out.txt', 'w')
+out.write(o)
