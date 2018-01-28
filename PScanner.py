@@ -34,14 +34,17 @@ def not_assign_update():
 
 
 def not_assigned_identifers(word, scope):
+
     global assignedIdentifiers
     canAdd = False
     for i in assignedIdentifiers:
-        if word == i[0] and scope == i[1]:
+        if i[0] == word and i[1] == scope:
             canAdd = False
             break
         else:
             canAdd = True
+
+    print (canAdd)
     return canAdd
 
 
@@ -83,22 +86,21 @@ for line in lines:
                     continue
 
                 elif words == '{':
-
+                    scope += 1
                     if words in notAssigned:
                         symbolTable[reserveID] = {'type': 'reserved', 'name': words, 'scope': scope}
                         token = ['{', reserveID]
                         tokens.append(token)
                         reserveID += 1
-                        scope += 1
                         not_assign_update()
 
                 elif words == '}':
+                    scope -= 1
                     if words in notAssigned:
                         symbolTable[reserveID] = {'type': 'reserved', 'name': words, 'scope': scope}
                         token = ['}', reserveID]
                         tokens.append(token)
                         reserveID += 1
-                        scope -= 1
                         not_assign_update()
 
                 else:
@@ -130,7 +132,7 @@ for line in lines:
                 digitPattern = re.compile('[0-9]')
 
                 if letterPattern.match(words):
-                    if not_assigned_identifers(words, scope):
+                    if not_assigned_identifers(words, scope) or len(assignedIdentifiers) == 0:
                         symbolTable[varID] = {'type': 'var', 'name': words, 'scope': scope}
                         token = ['identifier', varID]
                         tokens.append(token)
@@ -154,7 +156,7 @@ for line in lines:
                 integerPattern = re.compile('[+-]?[0-9]+')
 
                 if identifierPattern.match(words):
-                    if not_assigned_identifers(words, scope):
+                    if not_assigned_identifers(words, scope) or len(assignedIdentifiers) == 0:
                         symbolTable[varID] = {'type': 'var', 'name': words, 'scope': scope}
                         token = ['identifier', varID]
                         tokens.append(token)
