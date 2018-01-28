@@ -39,8 +39,7 @@ class NameSpace:
 
 def code_gen(action, symbole_table, last_token):
     global pb_index, PB, ss, all_sym, temp, adr, tmp_adr
-    print(ss)
-    print('===========')
+
     if action == 'Create_Package':
         package = NameSpace()
         package.name = 'Package'
@@ -54,7 +53,6 @@ def code_gen(action, symbole_table, last_token):
         cls = NameSpace()
         # print(symbole_table)
         cls.name = symbole_table[name[1]]['name']
-        print(cls.name)
         cls.type = 'class'
         cls.parent.append(package)
         package.contain.append(cls)
@@ -281,9 +279,8 @@ def code_gen(action, symbole_table, last_token):
         ss.append(t[1])
 
     elif action == 'Print':
-        printable = ss.pop()
-        output = symbole_table[printable]['value']
-        PB[pb_index] = '(PRINT , ' + output + ' )'
+        printable = ss.pop()[1]
+        PB[pb_index] = '(PRINT , ' + str(printable) + ' )'
 
     elif action == 'Var_Call':
         var = ss.pop()
@@ -318,9 +315,7 @@ def code_gen(action, symbole_table, last_token):
         cls = ss.pop()[1]
         mtd = symbole_table[mtd]['name']
         cls = symbole_table[cls]['name']
-        print(mtd, ' / ', cls)
         for a in all_sym:
-            print(a.name)
             if a.name == mtd:
                 for p in a.parent:
                     if p.name == cls:
@@ -334,6 +329,7 @@ def code_gen(action, symbole_table, last_token):
             pb_index += 1
             PB[pb_index] = '(JP , ' + str(mtd.address) + ', , )'
             pb_index += 1
+            ss.append(['identifier', mtd.return_value])
 
     elif action == 'Jp_Return':
         r_val = ss.pop()
@@ -354,10 +350,6 @@ def code_gen(action, symbole_table, last_token):
 
     elif action == 'Self':
         ss.append(last_token)
-
-    for i in sorted(PB.keys()):
-        print(PB[i])
-    print('-----------')
 
 
 def find_var(var_name, var_parents):
