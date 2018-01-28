@@ -111,7 +111,7 @@ for line in lines:
             else:
 
                 identifierPattern = re.compile('[A-Za-z]([A-Za-z]|[0-9])+')
-                integerPattern = re.compile('[0-9]+')
+                integerPattern = re.compile('[+-]?[0-9]+')
 
                 if identifierPattern.match(words):
                     symbolTable[varID] = {'type': 'var', 'name': words, 'scope': scope}
