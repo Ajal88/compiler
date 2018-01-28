@@ -61,33 +61,33 @@ for line in lines:
                     symbolTable[reserveID] = {'type': 'reserved', 'name': words, 'scope': scope}
                     token = ['{', reserveID]
                     tokens.append(token)
-                    reserveID += 4
+                    reserveID += 1
                     scope += 1
 
                 elif words == '}':
                     symbolTable[reserveID] = {'type': 'reserved', 'name': words, 'scope': scope}
                     token = ['}', reserveID]
                     tokens.append(token)
-                    reserveID += 4
+                    reserveID += 1
                     scope -= 1
 
                 else:
                     symbolTable[reserveID] = {'type': 'reserved', 'name': words, 'scope': scope}
                     token = [words, reserveID]
                     tokens.append(token)
-                    reserveID += 4
+                    reserveID += 1
 
             elif words == 'SOT':
                 symbolTable[reserveID] = {'type': 'reserved', 'name': 'System.out.println', 'scope': scope}
                 token = ['System.out.println', reserveID]
                 tokens.append(token)
-                reserveID += 4
+                reserveID += 1
 
             elif words == 'EQEQ':
                 symbolTable[reserveID] = {'type': 'reserved', 'name': '==', 'scope': scope}
                 token = ['==', reserveID]
                 tokens.append(token)
-                reserveID += 4
+                reserveID += 1
 
             elif len(words) == 1:
                 letterPattern = re.compile('[A-Za-z]')
