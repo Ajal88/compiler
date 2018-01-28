@@ -401,7 +401,7 @@ while top_stack != '$':
         top_stack = stack.pop()
     elif top_stack in action_symbol:
         top_stack = top_stack.replace('#', '')
-        # print(top_stack)
+        print(top_stack)
         code_gen(top_stack, symbolTable, last_token)
         # print(stack)
         top_stack = stack.pop()

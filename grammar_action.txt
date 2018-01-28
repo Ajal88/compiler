@@ -1,9 +1,9 @@
 Goal -> Source EOF
-Source -> ClassDeclarations MainClass
+Source -> #Create_Package ClassDeclarations MainClass
 MainClass -> public class Identifier #Assign_Table_Class { public static void main ( ) #Main { VarDeclarations Statements } }
 ClassDeclarations -> ClassDeclaration ClassDeclarations
 ClassDeclarations -> ''
-ClassDeclaration -> class #Create_Package Identifier #Assign_Table_Class Extension { FieldDeclarations MethodDeclarations } #End_Class
+ClassDeclaration -> class Identifier #Assign_Table_Class Extension { FieldDeclarations MethodDeclarations } #End_Class
 Extension -> extends Identifier #Class_Extend
 Extension -> ''
 FieldDeclarations -> FieldDeclaration FieldDeclarations
@@ -26,7 +26,7 @@ A -> Statement A
 A -> ''
 Statement -> { Statements }
 Statement -> if ( GenExpression ) #Save Statement else #Jpf_Save Statement #Jp
-Statement -> while #Label ( GenExpression ) Statement #While
+Statement -> while #Label ( GenExpression #Save ) Statement #While
 Statement -> for ( Identifier = Integer #Assign ; RelTerm #Cmp_Save ; Identifier + = Integer ) #step Statement #For
 Statement -> Identifier = GenExpression #Assign ;
 Statement -> System.out.println ( GenExpression ) #Print ;
