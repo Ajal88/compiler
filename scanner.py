@@ -1,4 +1,3 @@
-import fileinput
 import re
 
 reservedWords = ['EOF', 'public', 'class', '{', 'static', 'void', 'main', '()', '}', 'extends', ';', '(', ')',
@@ -11,7 +10,7 @@ flag = False
 
 symbolTable = dict()
 
-with open('test.txt') as test:
+with open('in.txt') as test:
     lines = test.readlines()
 
 reserveID = 0
@@ -41,7 +40,7 @@ for line in lines:
     wordsInLine = line.split()
     for words in wordsInLine:
 
-        if flag == True:
+        if flag:
             if words == '*/':
                 flag = False
                 continue
@@ -60,41 +59,39 @@ for line in lines:
                 elif words == '{':
 
                     symbolTable[reserveID] = {'type': 'reserved', 'name': words, 'scope': scope}
-                    token = ['reserved', reserveID]
+                    token = ['{', reserveID]
                     tokens.append(token)
-                    reserveID += 4
+                    reserveID += 1
                     scope += 1
 
                 elif words == '}':
                     symbolTable[reserveID] = {'type': 'reserved', 'name': words, 'scope': scope}
-                    token = ['reserved', reserveID]
+                    token = ['}', reserveID]
                     tokens.append(token)
-                    reserveID += 4
+                    reserveID += 1
                     scope -= 1
 
                 else:
                     symbolTable[reserveID] = {'type': 'reserved', 'name': words, 'scope': scope}
-                    token = ['reserved', reserveID]
+                    token = [words, reserveID]
                     tokens.append(token)
-                    reserveID += 4
+                    reserveID += 1
 
             elif words == 'SOT':
                 symbolTable[reserveID] = {'type': 'reserved', 'name': 'System.out.println', 'scope': scope}
-                token = ['reserved', reserveID]
+                token = ['System.out.println', reserveID]
                 tokens.append(token)
-                reserveID += 4
+                reserveID += 1
 
             elif words == 'EQEQ':
                 symbolTable[reserveID] = {'type': 'reserved', 'name': '==', 'scope': scope}
-                token = ['reserved', reserveID]
+                token = ['==', reserveID]
                 tokens.append(token)
-                reserveID += 4
-
+                reserveID += 1
 
             elif len(words) == 1:
                 letterPattern = re.compile('[A-Za-z]')
                 digitPattern = re.compile('[0-9]')
-
 
                 if letterPattern.match(words):
                     symbolTable[varID] = {'type': 'var', 'name': words, 'scope': scope}
@@ -106,7 +103,7 @@ for line in lines:
                     symbolTable[staticID] = {'type': 'static', 'name': words, 'scope': scope}
                     token = ['integer', staticID]
                     tokens.append(token)
-                    staticID+= 4
+                    staticID += 4
 
                 else:
                     print(words + "did not match any")
@@ -120,18 +117,17 @@ for line in lines:
                     symbolTable[varID] = {'type': 'var', 'name': words, 'scope': scope}
                     token = ['identifier', varID]
                     tokens.append(token)
-                    reserveID += 4
-
+                    varID += 4
 
                 elif integerPattern.match(words):
                     symbolTable[staticID] = {'type': 'static', 'name': words, 'scope': scope}
                     token = ['integer', staticID]
                     tokens.append(token)
-                    reserveID += 4
+                    staticID += 4
 
 
-def sendNextToken():
-    data = [tokens[0]]
+def send_next_token():
+    data = tokens[0]
 
     del tokens[0]
 
