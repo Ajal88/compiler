@@ -10,42 +10,16 @@ flag = False
 
 symbolTable = dict()
 
-with open('test.txt') as test:
+with open('in.txt') as test:
     lines = test.readlines()
 
 reserveID = 0
 varID = 200
 staticID = 100
 scope = 0
-notAssigned = ['EOF', 'public', 'class', '{', 'static', 'void', 'main', '()', '}', 'extends', ';', '(', ')',
-               'return', 'boolean', 'System.out.println', 'int', 'if', 'else', 'while', 'for',
-               'true', 'false', '&&', '==', '<', '>', '+=', '-', '*', '+', '//', '/*', '*/', ',', '=', '.']
-
-assignedIdentifiers = []
-
-assignedStatic = []
-
-
-def not_assign_update():
-    global notAssigned, symbolTable
-    for i in symbolTable.keys():
-        if symbolTable[i]['name'] in notAssigned:
-            notAssigned.remove(symbolTable[i]['name'])
-
-
-def not_assigned_identifers(word, scope):
-    global assignedIdentifiers
-    canAdd = False
-    for i in assignedIdentifiers:
-        if word == i[0] and scope == i[1]:
-            canAdd = False
-            break
-        else:
-            canAdd = True
-    return canAdd
-
 
 for line in lines:
+
     for Terminal in reservedWords:
         if Terminal in line:
 
@@ -84,66 +58,52 @@ for line in lines:
 
                 elif words == '{':
 
-                    if words in notAssigned:
-                        symbolTable[reserveID] = {'type': 'reserved', 'name': words, 'scope': scope}
-                        token = ['{', reserveID]
-                        tokens.append(token)
-                        reserveID += 1
-                        scope += 1
-                        not_assign_update()
+                    symbolTable[reserveID] = {'type': 'reserved', 'name': words, 'scope': scope}
+                    token = ['{', reserveID]
+                    tokens.append(token)
+                    reserveID += 1
+                    scope += 1
 
                 elif words == '}':
-                    if words in notAssigned:
-                        symbolTable[reserveID] = {'type': 'reserved', 'name': words, 'scope': scope}
-                        token = ['}', reserveID]
-                        tokens.append(token)
-                        reserveID += 1
-                        scope -= 1
-                        not_assign_update()
+                    symbolTable[reserveID] = {'type': 'reserved', 'name': words, 'scope': scope}
+                    token = ['}', reserveID]
+                    tokens.append(token)
+                    reserveID += 1
+                    scope -= 1
 
                 else:
-                    if words in notAssigned:
-                        symbolTable[reserveID] = {'type': 'reserved', 'name': words, 'scope': scope}
-                        token = [words, reserveID]
-                        tokens.append(token)
-                        reserveID += 1
-                        not_assign_update()
+                    symbolTable[reserveID] = {'type': 'reserved', 'name': words, 'scope': scope}
+                    token = [words, reserveID]
+                    tokens.append(token)
+                    reserveID += 1
 
             elif words == 'SOT':
-                if 'System.out.println' in notAssigned:
-                    symbolTable[reserveID] = {'type': 'reserved', 'name': 'System.out.println', 'scope': scope}
-                    token = ['System.out.println', reserveID]
-                    tokens.append(token)
-                    reserveID += 1
-                    not_assign_update()
+                symbolTable[reserveID] = {'type': 'reserved', 'name': 'System.out.println', 'scope': scope}
+                token = ['System.out.println', reserveID]
+                tokens.append(token)
+                reserveID += 1
 
             elif words == 'EQEQ':
-                if '==' in notAssigned:
-                    symbolTable[reserveID] = {'type': 'reserved', 'name': '==', 'scope': scope}
-                    token = ['==', reserveID]
-                    tokens.append(token)
-                    reserveID += 1
-                    not_assign_update()
+                symbolTable[reserveID] = {'type': 'reserved', 'name': '==', 'scope': scope}
+                token = ['==', reserveID]
+                tokens.append(token)
+                reserveID += 1
 
             elif len(words) == 1:
                 letterPattern = re.compile('[A-Za-z]')
                 digitPattern = re.compile('[0-9]')
 
                 if letterPattern.match(words):
-                    if not_assigned_identifers(words, scope):
-                        symbolTable[varID] = {'type': 'var', 'name': words, 'scope': scope}
-                        token = ['identifier', varID]
-                        tokens.append(token)
-                        varID += 4
-                        assignedIdentifiers.append([words, scope])
+                    symbolTable[varID] = {'type': 'var', 'name': words, 'scope': scope}
+                    token = ['identifier', varID]
+                    tokens.append(token)
+                    varID += 4
 
                 elif digitPattern.match(words):
-                    if words not in assignedStatic:
-                        symbolTable[staticID] = {'type': 'static', 'name': words, 'scope': scope}
-                        token = ['integer', staticID]
-                        tokens.append(token)
-                        staticID += 4
-                        assignedStatic.append(words)
+                    symbolTable[staticID] = {'type': 'static', 'name': words, 'scope': scope}
+                    token = ['integer', staticID]
+                    tokens.append(token)
+                    staticID += 4
 
                 else:
                     print(words + "did not match any")
@@ -154,26 +114,21 @@ for line in lines:
                 integerPattern = re.compile('[+-]?[0-9]+')
 
                 if identifierPattern.match(words):
-                    if not_assigned_identifers(words, scope):
-                        symbolTable[varID] = {'type': 'var', 'name': words, 'scope': scope}
-                        token = ['identifier', varID]
-                        tokens.append(token)
-                        varID += 4
-                        assignedIdentifiers.append([words, scope])
+                    symbolTable[varID] = {'type': 'var', 'name': words, 'scope': scope}
+                    token = ['identifier', varID]
+                    tokens.append(token)
+                    varID += 4
 
                 elif integerPattern.match(words):
-                    if words not in assignedStatic:
-                        symbolTable[staticID] = {'type': 'static', 'name': words, 'scope': scope}
-                        token = ['integer', staticID]
-                        tokens.append(token)
-                        staticID += 4
-                        assignedStatic.append(words)
+                    symbolTable[staticID] = {'type': 'static', 'name': words, 'scope': scope}
+                    token = ['integer', staticID]
+                    tokens.append(token)
+                    staticID += 4
 
 
 def send_next_token():
     data = tokens[0]
+
     del tokens[0]
+
     return data
-
-
-print(symbolTable)
