@@ -7,6 +7,9 @@ counter = 100
 reserveID = 0
 varID = 200
 staticID = 100
+scope = 0
+flag = False
+singleFlag = False
 
 symbolTable = dict()
 
@@ -24,17 +27,19 @@ tokens = []
 
 
 def delete_multi_line_comment():
-    global lookAhead, reserveID, operatorDetector, staticID, lastLA, counter, varID
-    lookAhead += 1
+    global lookAhead, reserveID, operatorDetector, staticID, lastLA, counter, varID, scope, flag, singleFlag
+    lookAhead += 2
     while lookAhead < len(line):
-        lookAhead += 1
-        if line[lookAhead] == '*' and line[lookAhead + 1] == '*':
+
+        if line[lookAhead] == '*' and line[lookAhead + 1] == '/':
             lookAhead += 2
             break
 
+        lookAhead += 1
+
 
 def is_integer():
-    global lookAhead, reserveID, operatorDetector, staticID, lastLA, counter, varID
+    global lookAhead, reserveID, operatorDetector, staticID, lastLA, counter, varID, scope, flag, singleFlag
     intgr = line[lookAhead]
     while True:
         lookAhead += 1
@@ -46,35 +51,40 @@ def is_integer():
             break
         else:
             operatorDetector = True
-            symbolTable[staticID] = {'type': 'static', 'name': intgr, 'scope': 'scope'}
+            symbolTable[staticID] = {'type': 'static', 'name': intgr, 'scope': scope}
             token = ['integer', staticID]
             tokens.append(token)
             staticID += 4
             break
 
 
-# todo beporsam
-
 def is_identifier():
-    global lookAhead, reserveID, operatorDetector, staticID, lastLA, counter, varID
-    identifier = ''
-    identifier += line[lookAhead]
+    global lookAhead, reserveID, operatorDetector, staticID, lastLA, counter, varID, scope, flag, singleFlag
+
+    identifier = line[lookAhead]
+
+    lookAhead += 1
+
     while True:
-        lookAhead += 1
 
         if letterPattern.match(line[lookAhead]) or digitPattern.match(line[lookAhead]):
 
             identifier += line[lookAhead]
 
-        elif line[lookAhead] in reserveLetters or lookAhead == len(line) - 1 or line[lookAhead] == ' ':
+        elif line[lookAhead] in reserveLetters or line[lookAhead] == ' ':
             if identifier in reservedWords:
-                symbolTable[reserveID] = {'type': 'reserved', 'name': identifier, 'scope': 'scope'}
-                token = ['reserved', reserveID]
-                tokens.append(token)
-                reserveID += 4
+                for i in symbolTable.keys():
+                    if symbolTable[i]['name'] == identifier:
+                        continue
+
+                    else:
+                        symbolTable[reserveID] = {'type': 'reserved', 'name': identifier, 'scope': scope}
+                        token = [identifier, reserveID]
+                        tokens.append(token)
+                        reserveID += 1
 
             else:
-                symbolTable[varID] = {'type': 'var', 'name': identifier, 'scope': 'scope'}
+                symbolTable[varID] = {'type': 'var', 'name': identifier, 'scope': scope}
                 token = ['identifier', varID]
                 tokens.append(token)
                 varID += 4
@@ -86,73 +96,149 @@ def is_identifier():
             lookAhead += 1
             break
 
-
-def is_equal():
-    global lookAhead, reserveID, operatorDetector, staticID, lastLA, counter, varID
-    operatorDetector = False
-
-    if line[lookAhead + 1] == '=':
-        symbolTable[reserveID] = {'type': 'reserved', 'name': '==', 'scope': 'scope'}
-        token = ['reserved', reserveID]
-        tokens.append(token)
-        reserveID += 4
-        lookAhead += 2
-
-    else:
-
-        symbolTable[reserveID] = {'type': 'reserved', 'name': '=', 'scope': 'scope'}
-        token = ['reserved', reserveID]
-        tokens.append(token)
-        reserveID += 4
         lookAhead += 1
 
 
-def plus_counter():
-    global lookAhead, reserveID, operatorDetector, staticID, lastLA, counter, varID
-    if line[lookAhead + 1] == '=':
-        symbolTable[reserveID] = {'type': 'reserved', 'name': '+=', 'scope': 'scope'}
-        token = ['reserved', reserveID]
-        tokens.append(token)
-        reserveID += 4
-        lookAhead += 2
+def is_equal():
+    global lookAhead, reserveID, operatorDetector, staticID, lastLA, counter, varID, scope, flag, singleFlag
+    operatorDetector = False
 
-        # todo
-        # elif digitPattern.match(line[lookAhead +1]) and (!(digitPattern.match(line[lookAhead-1])))
+    if line[lookAhead + 1] == '=':
+
+        for i in symbolTable.keys():
+            if symbolTable[i]['name'] == '==':
+                break
+
+            else:
+
+                symbolTable[reserveID] = {'type': 'reserved', 'name': '==', 'scope': scope}
+                token = ['==', reserveID]
+                tokens.append(token)
+                reserveID += 1
+                lookAhead += 2
+
+    else:
+
+        for i in symbolTable.keys():
+            if symbolTable[i]['name'] == '=':
+                break
+
+            else:
+                symbolTable[reserveID] = {'type': 'reserved', 'name': '=', 'scope': scope}
+                token = ['=', reserveID]
+                tokens.append(token)
+                reserveID += 1
+                lookAhead += 1
+
+
+def plus_counter():
+    global lookAhead, reserveID, operatorDetector, staticID, lastLA, counter, varID, scope, flag, singleFlag
+    if line[lookAhead + 1] == '=':
+
+        for i in symbolTable.keys():
+            if symbolTable[i]['name'] == '+=':
+                break
+            else:
+                symbolTable[reserveID] = {'type': 'reserved', 'name': '+=', 'scope': scope}
+                token = ['+=', reserveID]
+                tokens.append(token)
+                reserveID += 1
+                lookAhead += 2
+
+
+    elif digitPattern.match(line[lookAhead + 1]) and (
+                        line[lookAhead - 1] == '<' or line[lookAhead - 1] == '=' or line[lookAhead - 1] == '*',
+                        line[lookAhead - 1] == ',', line[lookAhead - 1] == '/', line[lookAhead - 1] == ';',
+                        line[lookAhead - 1] == '(', line[lookAhead - 1] == '-', line[lookAhead - 1] == '+',
+                        line[lookAhead - 1] == '{'):
+        operatorDetector = False
+        is_integer()
+
+    else:
+        for i in symbolTable.keys():
+            if symbolTable[i]['name'] == '+':
+                break
+            else:
+
+                symbolTable[reserveID] = {'type': 'reserved', 'name': '+', 'scope': scope}
+                token = ['+', reserveID]
+                tokens.append(token)
+                reserveID += 1
+                lookAhead += 1
+
+
+def minus_counter():
+    global lookAhead, reserveID, operatorDetector, staticID, lastLA, counter, varID, scope, flag, singleFlag
+
+    if digitPattern.match(line[lookAhead + 1]) and (
+                        line[lookAhead - 1] == '<' or line[lookAhead - 1] == '=' or line[lookAhead - 1] == '*',
+                        line[lookAhead - 1] == ',', line[lookAhead - 1] == '/', line[lookAhead - 1] == ';',
+                        line[lookAhead - 1] == '(', line[lookAhead - 1] == '-', line[lookAhead - 1] == '+',
+                        line[lookAhead - 1] == '{'):
+        operatorDetector = False
+        is_integer()
+
+
+    else:
+
+        for i in symbolTable.keys():
+            if symbolTable[i]['name'] == '-':
+                break
+            else:
+                symbolTable[reserveID] = {'type': 'reserved', 'name': '-', 'scope': scope}
+                token = ['-', reserveID]
+                tokens.append(token)
+                reserveID += 1
+                lookAhead += 1
 
 
 def paranteses():
-    global lookAhead, reserveID, operatorDetector, staticID, lastLA, counter, varID
-    symbolTable[reserveID] = {'type': 'reserved', 'name': '()', 'scope': 'scope'}
-    token = ['reserved', reserveID]
+    global lookAhead, reserveID, operatorDetector, staticID, lastLA, counter, varID, scope, flag, singleFlag
+    symbolTable[reserveID] = {'type': 'reserved', 'name': '()', 'scope': scope}
+    token = ['()', reserveID]
     tokens.append(token)
-    reserveID += 4
+    reserveID += 1
     lookAhead += 2
 
 
 def line_to_tokens(line):
-    global lookAhead, reserveID, operatorDetector, staticID, lastLA, counter, varID
+    global lookAhead, reserveID, operatorDetector, staticID, lastLA, counter, varID, scope, flag, singleFlag
+    lookAhead = 0
     while lookAhead < len(line):
 
-        if line[lookAhead] == ' ':
+        if line[lookAhead] == ' ' or flag == True or singleFlag == True:
             lookAhead += 1
 
         elif line[lookAhead] == '/' and line[lookAhead + 1] == '*':
+            flag = True
             delete_multi_line_comment()
 
+        elif line[lookAhead] == '*' and line[lookAhead + 1] == '/':
+            flag = False
+            lookAhead += 2
+
+
         elif line[lookAhead] == '/' and line[lookAhead + 1] == '/':
-            break
+            singleFlag = True
+            lookAhead += 2
 
         elif line[lookAhead] == '&' and line[lookAhead + 1] == '&':
 
-            symbolTable[reserveID] = {'type': 'reserved', 'name': '&&', 'scope': "scope"}
-            token = ['reserved', reserveID]
-            tokens.append(token)
-            lookAhead += 1
+            for i in symbolTable.keys():
+                if symbolTable[i]['name'] == '&&':
+                    break
+
+                else:
+                    symbolTable[reserveID] = {'type': 'reserved', 'name': '&&', 'scope': scope}
+                    token = ['reserved', reserveID]
+                    tokens.append(token)
+                    reserveID += 1
+                    lookAhead += 1
 
         elif digitPattern.match(line[lookAhead]) or (
-                operatorDetector == False and (
-                line[lookAhead] == '+' or line[lookAhead] == '-') and digitPattern.match(
-            line[lookAhead + 1])):
+                            operatorDetector == False and (
+                                    line[lookAhead] == '+' or line[lookAhead] == '-') and digitPattern.match(
+                    line[lookAhead + 1])):
 
             is_integer()
 
@@ -165,20 +251,48 @@ def line_to_tokens(line):
         elif line[lookAhead] == '+':
             plus_counter()
 
+        elif line[lookAhead] == '-':
+
+            minus_counter()
+
+
         elif line[lookAhead] == '(' and line[lookAhead + 1] == ')':
             paranteses()
 
         elif line[lookAhead] in reserveLetters:
-            operatorDetector = False
-            symbolTable[reserveID] = {'type': 'reserved', 'name': line[lookAhead], 'scope': 'scope'}
-            token = ['reserved', reserveID]
-            tokens.append(token)
-            reserveID += 4
-            lookAhead += 1
+            if line[lookAhead] == '{':
+                scope += 1
+            elif line[lookAhead] == '}':
+                scope -= 1
+            # operatorDetector = False
+
+            for i in symbolTable.keys():
+                if symbolTable[i]['name'] == line[lookAhead]:
+                    break
+
+                else:
+                    symbolTable[reserveID] = {'type': 'reserved', 'name': line[lookAhead], 'scope': scope}
+                    token = [line[lookAhead], reserveID]
+                    tokens.append(token)
+                    reserveID += 1
+                    lookAhead += 1
 
         else:
             lookAhead += 1
+    singleFlag = False
 
 
 for line in lines:
+    print(line)
     line_to_tokens(line)
+
+
+def get_token():
+    data = [tokens[0]]
+    del tokens[0]
+    return data
+
+
+
+
+print(symbolTable)
