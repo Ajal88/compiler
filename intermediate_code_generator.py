@@ -37,9 +37,11 @@ class NameSpace:
         self.address = None
 
 
-def code_gen(action, symbole_table, last_token):
+def code_gen(action, symbol_table, last_token):
     global pb_index, PB, ss, all_sym, temp, adr, tmp_adr
 
+    print(ss)
+    print('==========')
     if action == 'Create_Package':
         package = NameSpace()
         package.name = 'Package'
@@ -52,7 +54,7 @@ def code_gen(action, symbole_table, last_token):
         package = ss.pop()
         cls = NameSpace()
         # print(symbole_table)
-        cls.name = symbole_table[name[1]]['name']
+        cls.name = symbol_table[name[1]]['name']
         cls.type = 'class'
         cls.parent.append(package)
         package.contain.append(cls)
@@ -65,17 +67,17 @@ def code_gen(action, symbole_table, last_token):
         name = ss.pop()
         find = False
         for s in all_sym:
-            if s.name == symbole_table[name_extend[1]]['name']:
+            if s.name == symbol_table[name_extend[1]]['name']:
                 name_extend = s
                 find = True
         if not find:
-            print(Color.FAIL + 'Class ' + str(symbole_table[name_extend[1]]['name']) + ' does not exist!' + Color.ENDC)
+            print(Color.FAIL + 'Class ' + str(symbol_table[name_extend[1]]['name']) + ' does not exist!' + Color.ENDC)
         name.parent.append(name_extend)
         name_extend.contain.append(name)
         ss.append(name)
 
     elif action == 'Main':
-        PB[0] = '(JP , ' + str(pb_index - 1) + ', , )'
+        PB[0] = '(JP , ' + str(pb_index) + ', , )'
         cls = ss.pop()
         main = NameSpace()
         main.return_type = 'void'
@@ -94,26 +96,28 @@ def code_gen(action, symbole_table, last_token):
         var_type = ss.pop()[0]
         parent = ss.pop()
         static_var = NameSpace()
-        static_var.name = symbole_table[var_name[1]]['name']
+        static_var.name = symbol_table[var_name[1]]['name']
         static_var.address = var_name[1]
         static_var.type = var_type
         static_var.parent.append(parent)
         parent.contain.append(static_var)
         ss.append(parent)
-        symbole_table[static_var.address]['type'] = var_type
+        symbol_table[static_var.address]['type'] = var_type
+        all_sym.append(static_var)
 
     elif action == 'Var_Dec':
         var_name = ss.pop()
         var_type = ss.pop()[0]
         parent = ss.pop()
         var = NameSpace()
-        var.name = symbole_table[var_name[1]]['name']
+        var.name = symbol_table[var_name[1]]['name']
         var.type = var_type
         var.address = var_name[1]
         var.parent.append(parent)
         parent.contain.append(var)
         ss.append(parent)
-        symbole_table[var.address]['type'] = var_type
+        symbol_table[var.address]['type'] = var_type
+        all_sym.append(var)
 
     elif action == 'Assign_Table_Method':
         param_num = ss.pop()
@@ -124,7 +128,7 @@ def code_gen(action, symbole_table, last_token):
         m_type = ss.pop()[0]
         m_parent = ss.pop()
         method = NameSpace()
-        method.name = symbole_table[m_name[1]]['name']
+        method.name = symbol_table[m_name[1]]['name']
         method.type = 'method'
         method.return_type = m_type
         method.parent.append(m_parent)
@@ -147,7 +151,7 @@ def code_gen(action, symbole_table, last_token):
         param.address = name[1]
         param.type = typ
         ss.append(param)
-        symbole_table[param.address]['type'] = typ
+        symbol_table[param.address]['type'] = typ
         ss.append(1)
 
     elif action == 'Zero_Param':
@@ -188,10 +192,9 @@ def code_gen(action, symbole_table, last_token):
     elif action == 'While':
         index = ss.pop()
         content = ss.pop()
-        jp_content = ss.pop()
-        PB[index] = '(JPF , ' + str(content) + ', ' + str(pb_index + 1)
-        ', )'
-        PB[pb_index] = '(JP , ' + str(jp_content) + ', , )'
+        jump = ss.pop()
+        PB[index] = '(JPF , ' + str(content) + ', ' + str(pb_index + 1) + ', )'
+        PB[pb_index] = '(JP , ' + str(jump) + ', , )'
         pb_index += 1
 
     elif action == 'Assign':
@@ -204,7 +207,7 @@ def code_gen(action, symbole_table, last_token):
         t = get_temp()
         var1 = ss.pop()
         var2 = ss.pop()
-        PB[pb_index] = '(LT , ' + str(var2) + ', ' + str(var1) + ', ' + t[1] + ')'
+        PB[pb_index] = '(LT , ' + str(var2[1]) + ', ' + str(var1[1]) + ', ' + str(t[1]) + ')'
         pb_index += 1
         ss.append(var2)
         ss.append(t[1])
@@ -212,10 +215,10 @@ def code_gen(action, symbole_table, last_token):
         pb_index += 1
 
     elif action == 'For':
-        var1 = ss.pop()
-        var2 = ss.pop()
-        var3 = ss.pop()
-        var4 = ss.pop()
+        var1 = ss.pop()[1]
+        var2 = ss.pop()[1]
+        var3 = ss.pop()[1]
+        var4 = ss.pop()[1]
         var5 = var2 - 1
         PB[pb_index] = '(ADD , ' + str(var1) + ', ' + str(var4) + ', ' + str(var4) + ')'
         pb_index += 1
@@ -226,7 +229,7 @@ def code_gen(action, symbole_table, last_token):
     elif action == 'Step':
         var = ss.pop()
         intgr = ss.pop()
-        PB[pb_index] = '(ADD , #' + str(intgr) + ', ' + str(var[1]) + ', ' + str(var[1]) + ' )'
+        PB[pb_index] = '(ADD , #' + str(intgr[1]) + ', ' + str(var[1]) + ', ' + str(var[1]) + ' )'
         pb_index += 1
         ss.append(var[1])
 
@@ -234,7 +237,7 @@ def code_gen(action, symbole_table, last_token):
         t = get_temp()
         var1 = ss.pop()
         var2 = ss.pop()
-        PB[pb_index] = '(MULT , ' + str(var1) + ', ' + str(var2) + ', ' + str(t[1]) + ')'
+        PB[pb_index] = '(MULT , ' + str(var1[1]) + ', ' + str(var2[1]) + ', ' + str(t[1]) + ')'
         pb_index += 1
         ss.append(t[1])
 
@@ -250,23 +253,23 @@ def code_gen(action, symbole_table, last_token):
         t = get_temp()
         var1 = ss.pop()
         var2 = ss.pop()
-        PB[pb_index] = '(SUB , ' + str(var1) + ', ' + str(var2) + ', ' + str(t[1]) + ')'
+        PB[pb_index] = '(SUB , ' + str(var1[1]) + ', ' + str(var2[1]) + ', ' + str(t[1]) + ')'
         pb_index += 1
         ss.append(t[1])
 
-    elif action == 'Check_Equality':
+    elif action == 'EQ':
         t = get_temp()
         var1 = ss.pop()
         var2 = ss.pop()
-        PB[pb_index] = '(EQ , ' + str(var1) + ', ' + str(var2) + ', ' + str(t[1]) + ')'
+        PB[pb_index] = '(EQ , ' + str(var1[1]) + ', ' + str(var2[1]) + ', ' + str(t[1]) + ')'
         pb_index += 1
         ss.append(t[1])
 
-    elif action == 'Less_Than':
+    elif action == 'LT':
         t = get_temp()
         var1 = ss.pop()
         var2 = ss.pop()
-        PB[pb_index] = '(LT , ' + str(var1) + ', ' + str(var2) + ', ' + str(t[1]) + ')'
+        PB[pb_index] = '(LT , ' + str(var1[1]) + ', ' + str(var2[1]) + ', ' + str(t[1]) + ')'
         pb_index += 1
         ss.append(t[1])
 
@@ -274,23 +277,26 @@ def code_gen(action, symbole_table, last_token):
         t = get_temp()
         var1 = ss.pop()
         var2 = ss.pop()
-        PB[pb_index] = '(AND , ' + str(var1) + ', ' + str(var2) + ', ' + str(t[1]) + ')'
+        PB[pb_index] = '(AND , ' + str(var1[1]) + ', ' + str(var2[1]) + ', ' + str(t[1]) + ')'
         pb_index += 1
         ss.append(t[1])
 
     elif action == 'Print':
         printable = ss.pop()[1]
         PB[pb_index] = '(PRINT , ' + str(printable) + ' )'
+        pb_index += 1
 
     elif action == 'Var_Call':
         var = ss.pop()
         cls = ss.pop()
+        var = symbol_table[var[1]]['name']
+        cls = symbol_table[cls[1]]['name']
         for a in all_sym:
-            if symbole_table(var[1])['name'] == a.name:
+            if a.name == var:
                 for c in a.parent:
-                    if c.name == symbole_table(cls[1])['name']:
+                    if c.name == cls:
                         var = a
-                        ss.append(var.address)
+                        ss.append(['identifier', var.address])
                         break
 
     elif action == 'First_Arg':
@@ -313,8 +319,8 @@ def code_gen(action, symbole_table, last_token):
             ar.append(res)
         mtd = ss.pop()[1]
         cls = ss.pop()[1]
-        mtd = symbole_table[mtd]['name']
-        cls = symbole_table[cls]['name']
+        mtd = symbol_table[mtd]['name']
+        cls = symbol_table[cls]['name']
         for a in all_sym:
             if a.name == mtd:
                 for p in a.parent:
@@ -325,7 +331,7 @@ def code_gen(action, symbole_table, last_token):
             for i in range(arg_count):
                 PB[pb_index] = '(ASSIGN , ' + str(ar[i][1]) + ',' + str(mtd.contain[i].address) + ', )'
                 pb_index += 1
-            PB[pb_index] = '(ASSIGN , #' + str(pb_index + 2) + ',' + str(mtd.return_address) + ', )'
+            PB[pb_index] = '(ASSIGN , #' + str(pb_index + 1) + ',' + str(mtd.return_address) + ', )'
             pb_index += 1
             PB[pb_index] = '(JP , ' + str(mtd.address) + ', , )'
             pb_index += 1
@@ -337,7 +343,6 @@ def code_gen(action, symbole_table, last_token):
         mtd = ss.pop()
         mtd.return_address = j_address[1]
         mtd.return_value = r_val
-        pb_index += 1
         PB[pb_index] = '(JP , @' + str(mtd.return_address) + ', , )'
         pb_index += 1
         ss.append(mtd)
