@@ -10,7 +10,7 @@ flag = False
 
 symbolTable = dict()
 
-with open('test.txt') as test:
+with open('in.txt') as test:
     lines = test.readlines()
 
 reserveID = 0
@@ -44,7 +44,6 @@ def not_assigned_identifers(word, scope):
         else:
             canAdd = True
 
-    print (canAdd)
     return canAdd
 
 
@@ -176,6 +175,3 @@ def send_next_token():
     data = tokens[0]
     del tokens[0]
     return data
-
-
-print(symbolTable)

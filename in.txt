@@ -3,7 +3,7 @@ public class Cls {
 public static void main ( ) {
 int b ;
 b = 3 ;
-while ( b == 3){
+for ( b = 3; i < 4 ; i += 1 ){
 b = 2 ;
 }
 System.out.println ( b ) ;
