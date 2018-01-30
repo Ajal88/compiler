@@ -27,7 +27,7 @@ A -> ''
 Statement -> { Statements }
 Statement -> if ( GenExpression ) #Save Statement else #Jpf_Save Statement #Jp
 Statement -> while #Label ( GenExpression #Save ) Statement #While
-Statement -> for ( Identifier = Integer #Assign ; RelTerm #Cmp_Save ; Identifier + = Integer ) #step Statement #For
+Statement -> for ( Identifier = Integer #Assign ; RelTerm #Cmp_Save ; Identifier + = Integer ) Statement #For
 Statement -> Identifier = GenExpression #Assign ;
 Statement -> System.out.println ( GenExpression ) #Print ;
 GenExpression -> Factor C B E

@@ -204,34 +204,19 @@ def code_gen(action, symbol_table, last_token):
         pb_index += 1
 
     elif action == 'Cmp_Save':
-        t = get_temp()
-        var1 = ss.pop()
-        var2 = ss.pop()
-        PB[pb_index] = '(LT , ' + str(var2[1]) + ', ' + str(var1[1]) + ', ' + str(t[1]) + ')'
-        pb_index += 1
-        ss.append(var2)
-        ss.append(t[1])
         ss.append(pb_index)
         pb_index += 1
 
     elif action == 'For':
         var1 = ss.pop()[1]
         var2 = ss.pop()[1]
-        var3 = ss.pop()[1]
-        var4 = ss.pop()[1]
-        var5 = var2 - 1
-        PB[pb_index] = '(ADD , ' + str(var1) + ', ' + str(var4) + ', ' + str(var4) + ')'
+        var3 = ss.pop()
+        var4 = ss.pop()
+        PB[pb_index] = '(ADD , ' + str(var1) + ', ' + str(var2) + ', ' + str(var2) + ')'
         pb_index += 1
-        PB[pb_index] = '(JP , ' + str(var5) + ', , )'
+        PB[pb_index] = '(JP , ' + str(var3) + ', , )'
         pb_index += 1
-        PB[var2] = '(JPF , ' + str(var3) + ', ' + str(pb_index) + ', )'
-
-    elif action == 'Step':
-        var = ss.pop()
-        intgr = ss.pop()
-        PB[pb_index] = '(ADD , #' + str(intgr[1]) + ', ' + str(var[1]) + ', ' + str(var[1]) + ' )'
-        pb_index += 1
-        ss.append(var[1])
+        PB[var3] = '(JPF , ' + str(var4) + ', ' + str(pb_index) + ', )'
 
     elif action == 'Mult':
         t = get_temp()
@@ -283,7 +268,10 @@ def code_gen(action, symbol_table, last_token):
 
     elif action == 'Print':
         printable = ss.pop()[1]
-        PB[pb_index] = '(PRINT , ' + str(printable) + ' )'
+        if symbol_table[printable]['name'] == 'true' or symbol_table[printable]['name'] == 'false':
+            print(Color.FAIL + 'Does not support this format to print!' + Color.ENDC)
+        else:
+            PB[pb_index] = '(PRINT , ' + str(printable) + ' )'
         pb_index += 1
 
     elif action == 'Var_Call':
