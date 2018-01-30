@@ -2,7 +2,7 @@ import re
 
 reservedWords = ['EOF', 'public', 'class', '{', 'static', 'void', 'main', '()', '}', 'extends', ';', '(', ')',
                  'return', 'boolean', 'System.out.println', 'int', 'if', 'else', 'while', 'for',
-                 'true', 'false', '&&', '==', '<', '>', '+=', '-', '*', '+', '//', '/*', '*/', ',', '=', '.']
+                 'true', 'false', '&&', '==', '<', '+=', '-', '*', '+', '//', '/*', '*/', ',', '=', '.']
 
 tokens = []
 
@@ -19,7 +19,7 @@ staticID = 100
 scope = 0
 notAssigned = ['EOF', 'public', 'class', '{', 'static', 'void', 'main', '()', '}', 'extends', ';', '(', ')',
                'return', 'boolean', 'System.out.println', 'int', 'if', 'else', 'while', 'for',
-               'true', 'false', '&&', '==', '<', '>', '+=', '-', '*', '+', '//', '/*', '*/', ',', '=', '.']
+               'true', 'false', '&&', '==', '<', '+=', '-', '*', '+', '//', '/*', '*/', ',', '=', '.']
 
 assignedIdentifiers = []
 
@@ -34,7 +34,6 @@ def not_assign_update():
 
 
 def not_assigned_identifers(word, scope):
-
     global assignedIdentifiers
     canAdd = False
     for i in assignedIdentifiers:
@@ -44,7 +43,6 @@ def not_assigned_identifers(word, scope):
         else:
             canAdd = True
 
-    print (canAdd)
     return canAdd
 
 
@@ -52,19 +50,14 @@ for line in lines:
     for Terminal in reservedWords:
         if Terminal in line:
 
+            line = line.replace(Terminal, ' ' + Terminal + ' ', line.count(Terminal))
+
             if Terminal == 'System.out.println':
-                line = line.replace(Terminal, 'SOT')
+                line = line.replace(Terminal, '>>>')
                 continue
             elif Terminal == '==':
-                line = line.replace(Terminal, ' EQEQ ')
+                line = line.replace(Terminal, ' !!! ')
                 continue
-
-            if line.index(Terminal) == 0:
-                line = line[:len(Terminal)] + ' ' + line[len(Terminal):]
-
-            else:
-                line = line[:line.index(Terminal)] + ' ' + line[line.index(Terminal):]
-                line = line[:line.index(Terminal) + len(Terminal)] + ' ' + line[line.index(Terminal) + len(Terminal):]
 
     wordsInLine = line.split()
     for words in wordsInLine:
@@ -93,6 +86,13 @@ for line in lines:
                         tokens.append(token)
                         reserveID += 1
                         not_assign_update()
+                    else:
+                        for i in symbolTable:
+                            if symbolTable[i]['name'] == words:
+                                address = i
+                                token = [words, address]
+                                tokens.append(token)
+                                break
 
                 elif words == '}':
                     scope -= 1
@@ -103,6 +103,14 @@ for line in lines:
                         reserveID += 1
                         not_assign_update()
 
+                    else:
+                        for i in symbolTable:
+                            if symbolTable[i]['name'] == words:
+                                address = i
+                                token = [words, address]
+                                tokens.append(token)
+                                break
+
                 else:
                     if words in notAssigned:
                         symbolTable[reserveID] = {'type': 'reserved', 'name': words, 'scope': scope}
@@ -110,26 +118,51 @@ for line in lines:
                         tokens.append(token)
                         reserveID += 1
                         not_assign_update()
+                    else:
+                        for i in symbolTable:
+                            if symbolTable[i]['name'] == words:
+                                address = i
+                                token = [words, address]
+                                tokens.append(token)
+                                break
 
-            elif words == 'SOT':
+
+            elif words == '>>>':
                 if 'System.out.println' in notAssigned:
                     symbolTable[reserveID] = {'type': 'reserved', 'name': 'System.out.println', 'scope': scope}
                     token = ['System.out.println', reserveID]
                     tokens.append(token)
                     reserveID += 1
                     not_assign_update()
+                else:
+                    for i in symbolTable:
+                        if symbolTable[i]['name'] == 'System.out.println':
+                            address = i
+                            token = ['System.out.println', address]
+                            tokens.append(token)
+                            break
 
-            elif words == 'EQEQ':
+
+            elif words == '!!!':
                 if '==' in notAssigned:
                     symbolTable[reserveID] = {'type': 'reserved', 'name': '==', 'scope': scope}
                     token = ['==', reserveID]
                     tokens.append(token)
                     reserveID += 1
                     not_assign_update()
+                else:
+
+                    for i in symbolTable:
+                        if symbolTable[i]['name'] == '==':
+                            address = i
+                            token = ['==', address]
+                            tokens.append(token)
+                            break
+
 
             elif len(words) == 1:
-                letterPattern = re.compile('[A-Za-z]')
-                digitPattern = re.compile('[0-9]')
+                letterPattern = re.compile('[A-Za-z]$')
+                digitPattern = re.compile('[0-9]$')
 
                 if letterPattern.match(words):
                     if not_assigned_identifers(words, scope) or len(assignedIdentifiers) == 0:
@@ -138,6 +171,12 @@ for line in lines:
                         tokens.append(token)
                         varID += 4
                         assignedIdentifiers.append([words, scope])
+                    else:
+
+                        for i in symbolTable:
+                            if symbolTable[i]['name'] == words and symbolTable[i]['scope'] == scope:
+                                token = ['identifier', i]
+                                tokens.append(token)
 
                 elif digitPattern.match(words):
                     if words not in assignedStatic:
@@ -147,13 +186,20 @@ for line in lines:
                         staticID += 4
                         assignedStatic.append(words)
 
+                    else:
+
+                        for i in symbolTable:
+                            if symbolTable[i]['name'] == words:
+                                token = ['integer', i]
+                                tokens.append(token)
+
                 else:
-                    print(words + "did not match any")
+                    print(words + "did not match any of characters/digits")
 
             else:
 
-                identifierPattern = re.compile('[A-Za-z]([A-Za-z]|[0-9])+')
-                integerPattern = re.compile('[+-]?[0-9]+')
+                identifierPattern = re.compile('[A-Za-z][A-Za-z0-9]+$')
+                integerPattern = re.compile('[+-]?[0-9]+$')
 
                 if identifierPattern.match(words):
                     if not_assigned_identifers(words, scope) or len(assignedIdentifiers) == 0:
@@ -163,6 +209,12 @@ for line in lines:
                         varID += 4
                         assignedIdentifiers.append([words, scope])
 
+                    else:
+                        for i in symbolTable:
+                            if symbolTable[i]['name'] == words and symbolTable[i]['scope'] == scope:
+                                token = ['identifier', i]
+                                tokens.append(token)
+
                 elif integerPattern.match(words):
                     if words not in assignedStatic:
                         symbolTable[staticID] = {'type': 'static', 'name': words, 'scope': scope}
@@ -171,6 +223,15 @@ for line in lines:
                         staticID += 4
                         assignedStatic.append(words)
 
+                    else:
+                        for i in symbolTable:
+                            if symbolTable[i]['name'] == words:
+                                token = ['integer', i]
+                                tokens.append(token)
+
+                else:
+                    print(words + 'did not match any identifier/integer')
+
 
 def send_next_token():
     data = tokens[0]
@@ -178,4 +239,3 @@ def send_next_token():
     return data
 
 
-print(symbolTable)
